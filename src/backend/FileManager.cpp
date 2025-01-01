@@ -62,27 +62,29 @@ FileManager::FileManager() : FileManager(current_path()) {} //class constructor 
 
 FileManager::FileManager(const path& path) : FileManager(directory_entry(path)) {} //calls switchPath and initializes class in given path
 
-const path& FileManager::getCurrentPath() { //returns currentPath
+FileManager::FileManager(const FileManager& fm) : FileManager(fm.getCurrentPath()) {} 
+
+const path& FileManager::getCurrentPath() const { //returns currentPath
   return currentPath;
 }
 
-vector<directory_entry*>::const_iterator FileManager::filesBegin() { //returns cbegin of currentFilesFiltered
+vector<directory_entry*>::const_iterator FileManager::filesBegin() const { //returns cbegin of currentFilesFiltered
   return currentFilesFiltered.cbegin();
 }
 
-vector<directory_entry*>::const_iterator FileManager::filesEnd() { //returns cend of currentFilesFiltered
+vector<directory_entry*>::const_iterator FileManager::filesEnd() const { //returns cend of currentFilesFiltered
   return currentFilesFiltered.cend();
 }
 
-vector<string> *FileManager::getCurrentFilesString() { //returns pointer to currentFilesString
+const vector<string> *FileManager::getCurrentFilesString() const { //returns pointer to currentFilesString
   return &currentFilesString;
 }
 
-int *FileManager::getSelectedIndex() {
+const int *FileManager::getSelectedIndex() const {
   return &selectedIndex;
 }
 
-const directory_entry& FileManager::getSelectedFile() { //returns selectedFile
+const directory_entry& FileManager::getSelectedFile() const { //returns selectedFile
   return selectedFile;
 }
 
@@ -154,18 +156,18 @@ bool FileManager::selectParentDir(bool overRide) { //selects parent directory of
   return selectFile(path, true);
 }
 
-bool FileManager::isSelectedDirectory() { //returns true if selectedFile is a directory
+bool FileManager::isSelectedDirectory() const { //returns true if selectedFile is a directory
   return selectedFile.is_directory();
 }
 
-vector<directory_entry*>::const_iterator FileManager::selectedFilesBegin() { //return cbegin of selectedFileChildrenFiltered if selectedFile is a directory
+vector<directory_entry*>::const_iterator FileManager::selectedFilesBegin() const { //return cbegin of selectedFileChildrenFiltered if selectedFile is a directory
   if (! selectedFile.is_directory()) {
     return selectedFileChildrenFiltered.cend();
   }
   return selectedFileChildrenFiltered.cbegin();
 }
 
-vector<directory_entry*>::const_iterator FileManager::selectedFilesEnd() { //returns cend of selectedFileChildrenFiltered
+vector<directory_entry*>::const_iterator FileManager::selectedFilesEnd() const { //returns cend of selectedFileChildrenFiltered
   return selectedFileChildrenFiltered.cend();
 }
 

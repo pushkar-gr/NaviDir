@@ -41,14 +41,15 @@ public:
   FileManager(const directory_entry&); //constructor, initializes at given directory
   FileManager(); //constructor, initializes at current directory
   FileManager(const path&); //constructor, initializes at given path
+  FileManager(const FileManager&); //constructor, initilizes from given object
 
-  const path& getCurrentPath(); //gets the current directory program is in
+  const path& getCurrentPath() const; //gets the current directory program is in
 
-  vector<directory_entry*>::const_iterator filesBegin(); //begin of const iterator to read files in current directory
-  vector<directory_entry*>::const_iterator filesEnd(); //end of const iterator to read files in current directory
-  vector<string> *getCurrentFilesString(); //gets pointer to vector of current file names
-  int *getSelectedIndex(); //gets pointer to selectedIndex
-  const directory_entry& getSelectedFile(); //gets selected file
+  vector<directory_entry*>::const_iterator filesBegin() const; //begin of const iterator to read files in current directory
+  vector<directory_entry*>::const_iterator filesEnd() const; //end of const iterator to read files in current directory
+  const vector<string> *getCurrentFilesString() const; //gets pointer to vector of current file names
+  const int *getSelectedIndex() const; //gets pointer to selectedIndex
+  const directory_entry& getSelectedFile() const; //gets selected file
 
   bool selectFile(directory_entry&, bool skipCheck=false); //selects the given file
   bool selectFile(path&, bool skipCheck=false); //selelcts the given file
@@ -58,10 +59,10 @@ public:
   bool decrementSelected(bool cycle=true); //selects previous file in the current directory
   bool selectParentDir(bool overRide=false); //selects the parent directory
   
-  bool isSelectedDirectory(); //returns true if selected file is a directory
+  bool isSelectedDirectory() const; //returns true if selected file is a directory
 
-  vector<directory_entry*>::const_iterator selectedFilesBegin(); //begin of const iterator to read files in selected file
-  vector<directory_entry*>::const_iterator selectedFilesEnd(); //end of const iterator to read files in selected file
+  vector<directory_entry*>::const_iterator selectedFilesBegin() const; //begin of const iterator to read files in selected file
+  vector<directory_entry*>::const_iterator selectedFilesEnd() const; //end of const iterator to read files in selected file
   const string& getSelectedFileContent(); //returns content of selected file
 
   const path& switchPath(const directory_entry, bool skipCheck=false); //switchs to given directory
