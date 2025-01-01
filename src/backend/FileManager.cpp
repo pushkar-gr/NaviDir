@@ -78,6 +78,10 @@ vector<string> *FileManager::getCurrentFilesString() { //returns pointer to curr
   return &currentFilesString;
 }
 
+int *FileManager::getSelectedIndex() {
+  return &selectedIndex;
+}
+
 const directory_entry& FileManager::getSelectedFile() { //returns selectedFile
   return selectedFile;
 }
