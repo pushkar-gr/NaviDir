@@ -47,8 +47,8 @@ public:
 
   vector<directory_entry*>::const_iterator filesBegin() const; //begin of const iterator to read files in current directory
   vector<directory_entry*>::const_iterator filesEnd() const; //end of const iterator to read files in current directory
-  const vector<string> *getCurrentFilesString() const; //gets pointer to vector of current file names
-  const int *getSelectedIndex() const; //gets pointer to selectedIndex
+  vector<string> *getCurrentFilesString(); //gets pointer to vector of current file names
+  int *getSelectedIndex(); //gets pointer to selectedIndex
   const directory_entry& getSelectedFile() const; //gets selected file
 
   bool selectFile(directory_entry&, bool skipCheck=false); //selects the given file

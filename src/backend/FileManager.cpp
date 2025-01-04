@@ -76,11 +76,11 @@ vector<directory_entry*>::const_iterator FileManager::filesEnd() const { //retur
   return currentFilesFiltered.cend();
 }
 
-const vector<string> *FileManager::getCurrentFilesString() const { //returns pointer to currentFilesString
+vector<string> *FileManager::getCurrentFilesString() { //returns pointer to currentFilesString
   return &currentFilesString;
 }
 
-const int *FileManager::getSelectedIndex() const {
+int *FileManager::getSelectedIndex() { //return pointer to selectedIndex
   return &selectedIndex;
 }
 
