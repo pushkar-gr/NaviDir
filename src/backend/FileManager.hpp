@@ -27,6 +27,7 @@ private:
   vector<directory_entry> selectedFileChildren; //vector of children of selected files (if selected file is a directory)
   vector<directory_entry*> selectedFileChildrenFiltered; //vector of children of selected files (if selected file is a directory)
   string selectedFileContent; //content of selected file(if selected file is not a directory)
+  string selectedFileDisplayContent; //contents selectedFileContent if selected file is not a directory, else contains childrend directory in a list form
 
   void updateFiles(vector<directory_entry>&, const directory_entry&); //fills the vector with files from the specified directory
   void updateFiles(vector<directory_entry>&, const path&); //fills the vector with files from the specified path
@@ -47,7 +48,7 @@ public:
 
   vector<directory_entry*>::const_iterator filesBegin() const; //begin of const iterator to read files in current directory
   vector<directory_entry*>::const_iterator filesEnd() const; //end of const iterator to read files in current directory
-  vector<string> *getCurrentFilesString(); //gets pointer to vector of current file names
+  const vector<string> *getCurrentFilesString() const; //gets pointer to vector of current file names
   int *getSelectedIndex(); //gets pointer to selectedIndex
   const directory_entry& getSelectedFile() const; //gets selected file
 
@@ -63,7 +64,8 @@ public:
 
   vector<directory_entry*>::const_iterator selectedFilesBegin() const; //begin of const iterator to read files in selected file
   vector<directory_entry*>::const_iterator selectedFilesEnd() const; //end of const iterator to read files in selected file
-  const string& getSelectedFileContent(); //returns content of selected file
+  const string& getSelectedFileContent() const; //returns content of selected file
+  const string& getSelectedDisplayContent() const; //returns reference to selectedFileDisplayContent
 
   const path& switchPath(const directory_entry, bool skipCheck=false); //switchs to given directory
   const path& switchPath(path&, bool skipCheck=false); //switchs to given path

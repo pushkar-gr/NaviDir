@@ -18,7 +18,7 @@ void FileManager::updateFiles(vector<directory_entry>& vec, const path& path) { 
 void FileManager::updateSelectedData() { //updates selectedFileChildren or selectedFileContent depending on selectedFile type
   if (selectedFile.is_directory()) {
     updateFiles(selectedFileChildren, (selectedFile.path())); //fills the vector with files if selectedFile is a directory
-    applyFilterSelected(NONE);
+    applyFilterSelected(NONE); //todo: call respective filter after implimentation
   } else { //writes the content of selectedFile to selectedFileContent if it is not a directory
     ifstream file (selectedFile.path());
     if (!file) {
@@ -30,6 +30,7 @@ void FileManager::updateSelectedData() { //updates selectedFileChildren or selec
       content += line + "\n";
     }
     selectedFileContent = content;
+    selectedFileDisplayContent = content;
   }
 }
 
@@ -47,9 +48,12 @@ bool FileManager::applyNoneFilterSelected() { //fills the filter vector with poi
   if (! selectedFile.is_directory()) {
     return false;
   }
+  selectedFileDisplayContent = "";
   selectedFileChildrenFiltered.clear();
   for (directory_entry &entry : selectedFileChildren) {
     selectedFileChildrenFiltered.push_back(&entry);
+    selectedFileDisplayContent += entry.path().filename(); //todo: call formatString from forntend to add any icon/color to the string
+    selectedFileDisplayContent.push_back(0xa);
   }
   return true;
 }
@@ -76,7 +80,7 @@ vector<directory_entry*>::const_iterator FileManager::filesEnd() const { //retur
   return currentFilesFiltered.cend();
 }
 
-vector<string> *FileManager::getCurrentFilesString() { //returns pointer to currentFilesString
+const vector<string> *FileManager::getCurrentFilesString() const { //returns pointer to currentFilesString
   return &currentFilesString;
 }
 
@@ -171,7 +175,7 @@ vector<directory_entry*>::const_iterator FileManager::selectedFilesEnd() const {
   return selectedFileChildrenFiltered.cend();
 }
 
-const string& FileManager::getSelectedFileContent() { //returns content of selectedFile if it is not a directory
+const string& FileManager::getSelectedFileContent() const { //returns content of selectedFile if it is not a directory
   if (selectedFile.is_directory()) {
     return NULL;
   }
