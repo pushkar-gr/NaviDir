@@ -38,7 +38,7 @@ bool FileManager::applyNoneFilterCurrent() { //fills the filter vector with poin
   currentFilesString.clear();
   for (directory_entry &entry : currentFiles) {
     currentFilesFiltered.push_back(&entry);
-    currentFilesString.push_back(entry.path().string()); //todo: call formatString from forntend to add any icon/color to the string
+    currentFilesString.push_back(entry.path().filename()); //todo: call formatString from forntend to add any icon/color to the string
   }
   return true;
 }
