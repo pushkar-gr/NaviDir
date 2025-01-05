@@ -9,3 +9,6 @@ target_include_directories(NaviDir PRIVATE
   ${CMAKE_SOURCE_DIR}/src/frontend
   ${CMAKE_SOURCE_DIR}/src/backend
 )
+
+target_link_libraries(NaviDir PRIVATE ftxui::dom ftxui::screen ftxui::component)
+
