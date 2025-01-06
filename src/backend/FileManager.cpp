@@ -196,7 +196,7 @@ const path& FileManager::switchPath(const directory_entry entry, bool skipCheck)
   if (! skipCheck) {
     currentFiles.clear();
     for (const auto& dir_entry : directory_iterator(currentPath)) {
-      currentFiles.push_back(entry);
+      currentFiles.push_back(dir_entry);
       if (dir_entry == selectedFile) {
         selectedIndex = currentFiles.size() - 1; //previous currentPath found in new directory
       }
