@@ -65,7 +65,7 @@ public:
   vector<directory_entry*>::const_iterator selectedFilesBegin() const; //begin of const iterator to read files in selected file
   vector<directory_entry*>::const_iterator selectedFilesEnd() const; //end of const iterator to read files in selected file
   const string& getSelectedFileContent() const; //returns content of selected file
-  const string& getSelectedDisplayContent() const; //returns reference to selectedFileDisplayContent
+  const string* getSelectedDisplayContent() const; //returns reference to selectedFileDisplayContent
 
   const path& switchPath(const directory_entry, bool skipCheck=false); //switchs to given directory
   const path& switchPath(path&, bool skipCheck=false); //switchs to given path

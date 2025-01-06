@@ -182,6 +182,10 @@ const string& FileManager::getSelectedFileContent() const { //returns content of
   return selectedFileContent;
 }
 
+const string *FileManager::getSelectedDisplayContent() const { //return a pointer to selectedFileDisplayContent
+  return &selectedFileDisplayContent;
+}
+
 const path& FileManager::switchPath(const directory_entry entry, bool skipCheck) { //changes currentPath to give path
   if (! entry.is_directory()) {
     return currentPath; //return if given path is not a directory
