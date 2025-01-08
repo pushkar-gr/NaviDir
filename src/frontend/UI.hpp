@@ -14,6 +14,13 @@
 using namespace std;
 using namespace ftxui;
 
+
+enum SelectedElement {
+  currentFiles, //file tree where all the files in current directory is displayed
+  selectedFiles, //display content of selected file
+  cli, //cli for user actions
+};
+
 class UI {
 private:
   Component createRootComp(Component&, Component&, Component&); //creates the root component of the ui
@@ -25,6 +32,9 @@ private:
   Component createCliComp(string *); //creates the cli Component in which user can input cmds
 
   Component afterRenderFunc(); //a function that runs after rendering root component
+  
+  SelectedElement selectedElement;
+  bool handleInput(Event);
 
   FileManager *fm; //pointer to backend file manager
 
