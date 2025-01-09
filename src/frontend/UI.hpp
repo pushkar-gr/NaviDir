@@ -20,7 +20,7 @@ enum SelectedElement {
 
 class UI {
 private:
-  Component createRootComp(Component&, Component&, Component&, Component&, Component&); //creates the root component of the ui
+  Component createRootComp(Component&, Component&, Component&, Component&); //creates the root component of the ui
 
   Component createCurrentDirComp(const path *); //creates a component to display current directory
 
@@ -30,11 +30,11 @@ private:
 
   Component createCliComp(string *); //creates the cli Component in which user can input cmds
 
-  Component createCliOutputComp(string *);
-
   Component afterRenderFunc(); //a function that runs after rendering root component
 
   bool handleInput(Event); //handls input
+
+  bool processCliInput();
 
   void displayOutput(string); //displays the output in cliOutputComp
 
@@ -56,11 +56,8 @@ private:
   const string *selectedFileData; //content to display in selectedFileComp
   Component selectedFileComp; //component to display contents of selected file
 
-  string cliInput; //input for the cli
+  string cliText; //input for the cli
   Component cliComp; //cli component
-
-  string cliOutput; //output for the cli
-  Component cliOutputComp; //cli output component
 
 public:
   UI(FileManager *fm); //constructor to create UI

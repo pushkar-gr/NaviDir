@@ -5,7 +5,7 @@
 //left: currentFiles
 //right: selectedFiles
 //bottom: cli
-Component UI::createRootComp(Component& currentDir, Component& currentFiles, Component& selectedFiles, Component& cli, Component& cliOutput) {
+Component UI::createRootComp(Component& currentDir, Component& currentFiles, Component& selectedFiles, Component& cli) {
   return Renderer([=] {
     return vbox({
       currentDir->Render() | xflex,
@@ -17,8 +17,6 @@ Component UI::createRootComp(Component& currentDir, Component& currentFiles, Com
       }) | yflex,
       separator(),
       cli->Render(),
-      separator() | color(Color::GrayDark),
-      cliOutput->Render(),
       afterRenderFunc()->Render(),
     });
   }) | CatchEvent([=] (Event event) {
@@ -64,13 +62,6 @@ Component UI::createCliComp(string *inputString) {
   }) | xflex;
 }
 
-//creates component to display cli output
-Component UI::createCliOutputComp(string *outputString) {
-  return Renderer([=] {
-    return text(*outputString);
-  }) | xflex;
-}
-
 //runs after the root completes rendering
 Component UI::afterRenderFunc() {
   return Renderer([=] {
@@ -80,12 +71,6 @@ Component UI::afterRenderFunc() {
 
 //handles user input
 bool UI::handleInput(Event event) {
-  if ((event == Event::Special(":") || event == Event::Special(";")) && selectedElement != SelectedElement::cli) { //selects cli if user input is ; or :
-    selectedElement = SelectedElement::cli;
-    if (cliInput.size() != 0) {
-      return false;
-    }
-  }
   switch (selectedElement) {
     case SelectedElement::currentFiles:
       if (event == Event::h || event == Event::ArrowRight) { //switch to parent
@@ -125,25 +110,29 @@ bool UI::handleInput(Event event) {
       break;
     case SelectedElement::cli:
       if (event == Event::Return) {
-        //process input and run
         selectedElement = SelectedElement::currentFiles;
-      } else if (event == Event::Backspace) { //backspace
-        cliInput.pop_back();
-      } else if (event == Event::Special(";")) { //append ':' instead of ';'
-        cliInput.push_back(':');
+        return processCliInput();
       } else if (event == Event::Escape) {
         selectedElement = SelectedElement::currentFiles;
+        displayOutput("");
+      } else if (event == Event::Backspace) { //backspace
+        cliText.pop_back();
       } else { //append user input
-        cliInput += event.character();
+        cliText += event.character();
       }
       break;
   }
   return false;
 }
 
-//displays output in cliOutputComp
+bool UI::processCliInput() {
+
+  return false;
+}
+
+//displays output in cliTextComp
 void UI::displayOutput(string output) {
-  cliOutput = output;
+  cliText = output;
 }
 
 //constructor
@@ -165,11 +154,9 @@ UI::UI(FileManager *fileManager) {
   selectedFileData = fm->getSelectedDisplayContent();
   selectedFileComp = createSelectedFileComp(selectedFileData);
 
-  cliComp = createCliComp(&cliInput);
+  cliComp = createCliComp(&cliText);
 
-  cliOutputComp = createCliOutputComp(&cliOutput);
-
-  rootComp = createRootComp(currentDirectoryComp, currentFilesComp, selectedFileComp, cliComp, cliOutputComp);
+  rootComp = createRootComp(currentDirectoryComp, currentFilesComp, selectedFileComp, cliComp);
 
   selectedElement = SelectedElement::currentFiles;
 
