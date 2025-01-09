@@ -1,10 +1,4 @@
 #include "UI.hpp"
-#include <ftxui/component/component.hpp>
-#include <ftxui/component/component_base.hpp>
-#include <ftxui/component/component_options.hpp>
-#include <ftxui/component/event.hpp>
-#include <ftxui/dom/elements.hpp>
-#include <ftxui/screen/terminal.hpp>
 
 //creates the root Component
 //left: currentFiles
@@ -16,7 +10,7 @@ Component UI::createRootComp(Component& currentFiles, Component& selectedFiles, 
       hbox({
         currentFiles->Render() | size(WIDTH, EQUAL, Terminal::Size().dimx * .3),
         separator(),
-        selectedFiles->Render(),
+        selectedFiles->Render() | size(WIDTH, EQUAL, Terminal::Size().dimx * .7),
       }) | yflex,
       separator(),
       cli->Render(),
@@ -43,7 +37,7 @@ Component UI::createCurrentFilesComp(const vector<string> *data, int *index) {
 //creates component to display the content or files in selected file
 Component UI::createSelectedFileComp(const string *data) { 
   return Renderer([=] {
-      return paragraph(*data) | vscroll_indicator | frame;
+      return paragraph(*data) | vscroll_indicator | hscroll_indicator  | focusPositionRelative(focus_x, focus_y) | frame;
   });
 }
 
@@ -65,6 +59,9 @@ Component UI::afterRenderFunc() {
 bool UI::handleInput(Event event) {
   if ((event == Event::Special(":") || event == Event::Special(";")) && selectedElement != SelectedElement::cli) { //selects cli if user input is ; or :
     selectedElement = SelectedElement::cli;
+    if (cliInput.size() != 0) {
+      return false;
+    }
   }
   switch (selectedElement) {
     case SelectedElement::currentFiles:
@@ -83,21 +80,32 @@ bool UI::handleInput(Event event) {
       }
       break;
     case SelectedElement::selectedFiles:
-      if (event == Event::h || event == Event::ArrowLeft) { //selects back the file tree(currentFiles) 
+      if (event == Event::j || event == Event::ArrowDown) { //scroll down
+        focus_y += .1;
+        focus_y = focus_y > 1 ? 1 : focus_y;
+      } else if (event == Event::k || event == Event::ArrowUp) { //scroll up
+        focus_y -= .1;
+        focus_y = focus_y < 0 ? 0 : focus_y;
+      } else if (event == Event::CtrlH || event == Event::Backspace) { //scroll left
+        focus_x -= .1;
+        focus_x = focus_x < 0 ? 0 : focus_x;
+      } else if (event == Event::CtrlL) { //scroll right
+        focus_x += .1;
+        focus_x = focus_x > 1 ? 1 : focus_x;
+      } else if (event == Event::h || event == Event::ArrowLeft) { //selects back the file tree(currentFiles) 
         selectedElement = SelectedElement::currentFiles;
-      } else if (event == Event::j || event == Event::ArrowDown) {
-        //scroll down
-      } else if (event == Event::k || event == Event::ArrowUp) {
-        //scroll up
       }
       break;
     case SelectedElement::cli:
       if (event == Event::Return) {
         //process input and run
+        selectedElement = SelectedElement::currentFiles;
       } else if (event == Event::Backspace) { //backspace
         cliInput.pop_back();
       } else if (event == Event::Special(";")) { //append ':' instead of ';'
         cliInput.push_back(':');
+      } else if (event == Event::Escape) {
+        selectedElement = SelectedElement::currentFiles;
       } else { //append user input
         cliInput += event.character();
       }
@@ -117,6 +125,8 @@ UI::UI(FileManager *fileManager) {
   currentIndex = fm->getSelectedIndex();
   currentFilesComp = createCurrentFilesComp(currentFiles, currentIndex);
 
+  focus_x = 0.f;
+  focus_y = 0.f;
   selectedFileData = fm->getSelectedDisplayContent();
   selectedFileComp = createSelectedFileComp(selectedFileData);
 

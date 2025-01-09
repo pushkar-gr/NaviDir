@@ -1,12 +1,9 @@
 #ifndef UI_HPP
 #define UI_HPP
 #include "../backend/FileManager.hpp"
-#include "ftxui/component/captured_mouse.hpp"
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/component_base.hpp"
 #include "ftxui/component/screen_interactive.hpp"
-#include "ftxui/dom/elements.hpp"
-#include "../scroller/scroller.hpp"
 #include <ftxui/component/event.hpp>
 #include <string>
 #include <vector>
@@ -44,6 +41,8 @@ private:
   int *currentIndex; //index of selected file
   Component currentFilesComp; //component to display all the files in current directory
   
+  float focus_x; //used to scroll selectedFileComp horizontally
+  float focus_y; //used to scroll selectedFileComp vertically
   const string *selectedFileData; //content to display in selectedFileComp
   Component selectedFileComp; //component to display contents of selected file
 
