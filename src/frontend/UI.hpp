@@ -20,7 +20,9 @@ enum SelectedElement {
 
 class UI {
 private:
-  Component createRootComp(Component&, Component&, Component&); //creates the root component of the ui
+  Component createRootComp(Component&, Component&, Component&, Component&, Component&); //creates the root component of the ui
+
+  Component createCurrentDirComp(const path *); //creates a component to display current directory
 
   Component createCurrentFilesComp(const vector<string> *, int *); //creates the file component which displays all the files in current directory
 
@@ -28,14 +30,22 @@ private:
 
   Component createCliComp(string *); //creates the cli Component in which user can input cmds
 
+  Component createCliOutputComp(string *);
+
   Component afterRenderFunc(); //a function that runs after rendering root component
-  
-  SelectedElement selectedElement;
-  bool handleInput(Event);
+
+  bool handleInput(Event); //handls input
+
+  void displayOutput(string); //displays the output in cliOutputComp
+
+  SelectedElement selectedElement; //focused element
 
   FileManager *fm; //pointer to backend file manager
 
   Component rootComp; //the root component
+
+  const path *currentDirectory; //current directory program is in
+  Component currentDirectoryComp; //component to display current directory
 
   const vector<string> *currentFiles; //names of files in current directory
   int *currentIndex; //index of selected file
@@ -48,6 +58,9 @@ private:
 
   string cliInput; //input for the cli
   Component cliComp; //cli component
+
+  string cliOutput; //output for the cli
+  Component cliOutputComp; //cli output component
 
 public:
   UI(FileManager *fm); //constructor to create UI

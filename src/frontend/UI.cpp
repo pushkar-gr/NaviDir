@@ -1,12 +1,15 @@
 #include "UI.hpp"
+#include <ftxui/component/component_base.hpp>
 
 //creates the root Component
 //left: currentFiles
 //right: selectedFiles
 //bottom: cli
-Component UI::createRootComp(Component& currentFiles, Component& selectedFiles, Component& cli) {
+Component UI::createRootComp(Component& currentDir, Component& currentFiles, Component& selectedFiles, Component& cli, Component& cliOutput) {
   return Renderer([=] {
     return vbox({
+      currentDir->Render() | xflex,
+      separator(),
       hbox({
         currentFiles->Render() | size(WIDTH, EQUAL, Terminal::Size().dimx * .3),
         separator(),
@@ -14,11 +17,20 @@ Component UI::createRootComp(Component& currentFiles, Component& selectedFiles, 
       }) | yflex,
       separator(),
       cli->Render(),
+      separator() | color(Color::GrayDark),
+      cliOutput->Render(),
       afterRenderFunc()->Render(),
     });
   }) | CatchEvent([=] (Event event) {
     return handleInput(event);
   });
+}
+
+//creates component to display directory program is in
+Component UI::createCurrentDirComp(const path *currentDir) {
+  return Renderer([=] {
+    return text((*currentDir).string()) | center;
+  }) | xflex;
 }
 
 //creates component to display files in current directory
@@ -49,6 +61,13 @@ Component UI::createSelectedFileComp(const string *data) {
 Component UI::createCliComp(string *inputString) {
   return Renderer([=] {
     return text(*inputString);
+  }) | xflex;
+}
+
+//creates component to display cli output
+Component UI::createCliOutputComp(string *outputString) {
+  return Renderer([=] {
+    return text(*outputString);
   }) | xflex;
 }
 
@@ -122,6 +141,11 @@ bool UI::handleInput(Event event) {
   return false;
 }
 
+//displays output in cliOutputComp
+void UI::displayOutput(string output) {
+  cliOutput = output;
+}
+
 //constructor
 //will get the data from backend and create UI
 UI::UI(FileManager *fileManager) {
@@ -129,6 +153,9 @@ UI::UI(FileManager *fileManager) {
 
   auto screen = ScreenInteractive::Fullscreen();
   
+  currentDirectory = fm->getCurrentPath();
+  currentDirectoryComp = createCurrentDirComp(currentDirectory);
+
   currentFiles = fm->getCurrentFilesString();
   currentIndex = fm->getSelectedIndex();
   currentFilesComp = createCurrentFilesComp(currentFiles, currentIndex);
@@ -140,9 +167,13 @@ UI::UI(FileManager *fileManager) {
 
   cliComp = createCliComp(&cliInput);
 
-  rootComp = createRootComp(currentFilesComp, selectedFileComp, cliComp);
+  cliOutputComp = createCliOutputComp(&cliOutput);
+
+  rootComp = createRootComp(currentDirectoryComp, currentFilesComp, selectedFileComp, cliComp, cliOutputComp);
 
   selectedElement = SelectedElement::currentFiles;
+
+  displayOutput("Opened directory " + (*currentDirectory).string());
   
   screen.Loop(rootComp);
 }
