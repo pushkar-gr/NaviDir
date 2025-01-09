@@ -24,10 +24,14 @@ Component UI::createRootComp(Component& currentFiles, Component& selectedFiles, 
 //creates component to display files in current directory
 Component UI::createCurrentFilesComp(const vector<string> *data, int *index) { 
   MenuOption option = MenuOption::Vertical();
-  option.entries_option.transform = [](EntryState state) {
+  option.entries_option.transform = [this](EntryState state) {
     Element element = text(state.label);
     if (state.active) {
-      element |= bgcolor(Color::White) | color(Color::Black);
+      if (selectedElement == SelectedElement::currentFiles) {
+        element |= bgcolor(Color::White) | color(Color::Black);
+      } else {
+        element |= bgcolor(Color::GrayDark) | color(Color::White);
+      }
     }
     return element;
   };
@@ -37,7 +41,7 @@ Component UI::createCurrentFilesComp(const vector<string> *data, int *index) {
 //creates component to display the content or files in selected file
 Component UI::createSelectedFileComp(const string *data) { 
   return Renderer([=] {
-      return paragraph(*data) | vscroll_indicator | hscroll_indicator  | focusPositionRelative(focus_x, focus_y) | frame;
+    return paragraph(*data) | vscroll_indicator | hscroll_indicator  | focusPositionRelative(focus_x, focus_y) | frame;
   });
 }
 
@@ -67,16 +71,20 @@ bool UI::handleInput(Event event) {
     case SelectedElement::currentFiles:
       if (event == Event::h || event == Event::ArrowRight) { //switch to parent
         fm->switchToParent();
+        focus_x = focus_y = 0.f;
       } else if (event == Event::l || event == Event::Return || event == Event::Tab || event == Event::ArrowLeft) { //switch to selected file
         if (fm->isSelectedDirectory()) {
           fm->switchPath();
+          focus_x = focus_y = 0.f;
         } else {
           selectedElement = SelectedElement::selectedFiles;
         }
       } else if (event == Event::j || event == Event::ArrowDown) { //select next file
         fm->incrementSelected();
+        focus_x = focus_y = 0.f;
       } else if (event == Event::k || event == Event::ArrowUp) { //seelct prev file
         fm->decrementSelected();
+        focus_x = focus_y = 0.f;
       }
       break;
     case SelectedElement::selectedFiles:
