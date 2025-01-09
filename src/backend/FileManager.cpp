@@ -66,10 +66,10 @@ FileManager::FileManager() : FileManager(current_path()) {} //class constructor 
 
 FileManager::FileManager(const path& path) : FileManager(directory_entry(path)) {} //calls switchPath and initializes class in given path
 
-FileManager::FileManager(const FileManager& fm) : FileManager(fm.getCurrentPath()) {} 
+FileManager::FileManager(const FileManager& fm) : FileManager(*fm.getCurrentPath()) {} 
 
-const path& FileManager::getCurrentPath() const { //returns currentPath
-  return currentPath;
+const path *FileManager::getCurrentPath() const { //returns currentPath
+  return &currentPath;
 }
 
 vector<directory_entry*>::const_iterator FileManager::filesBegin() const { //returns cbegin of currentFilesFiltered

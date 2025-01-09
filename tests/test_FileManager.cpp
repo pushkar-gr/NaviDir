@@ -34,17 +34,17 @@ protected:
 
 TEST_F(FileManagerTest, ConstructorDefault) {
   FileManager fm;
-  ASSERT_EQ(fm.getCurrentPath(), current_path());
+  ASSERT_EQ(*fm.getCurrentPath(), current_path());
 }
 
 TEST_F(FileManagerTest, ConstructorWithPath) {
   FileManager fm(tempDir);
-  ASSERT_EQ(fm.getCurrentPath(), tempDir);
+  ASSERT_EQ(*fm.getCurrentPath(), tempDir);
 }
 
 TEST_F(FileManagerTest, ConstructorWithDirEntry) {
   FileManager fm((directory_entry(tempDir)));
-  ASSERT_EQ(fm.getCurrentPath(), tempDir);
+  ASSERT_EQ(*fm.getCurrentPath(), tempDir);
 }
 
 TEST_F(FileManagerTest, SelectFileByPath) {
@@ -74,7 +74,7 @@ TEST_F(FileManagerTest, SwitchPath) {
   FileManager fm(tempDir);
 
   ASSERT_EQ(fm.switchPath(subDir), subDir);
-  ASSERT_EQ(fm.getCurrentPath(), subDir);
+  ASSERT_EQ(*fm.getCurrentPath(), subDir);
 }
 
 TEST_F(FileManagerTest, SwitchToParent) {
@@ -84,7 +84,7 @@ TEST_F(FileManagerTest, SwitchToParent) {
   FileManager fm(subDir);
 
   ASSERT_EQ(fm.switchToParent(), tempDir);
-  ASSERT_EQ(fm.getCurrentPath(), tempDir);
+  ASSERT_EQ(*fm.getCurrentPath(), tempDir);
 }
 
 TEST_F(FileManagerTest, GetSelectedFileContent) {

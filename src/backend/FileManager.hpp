@@ -44,7 +44,7 @@ public:
   FileManager(const path&); //constructor, initializes at given path
   FileManager(const FileManager&); //constructor, initilizes from given object
 
-  const path& getCurrentPath() const; //gets the current directory program is in
+  const path *getCurrentPath() const; //gets the current directory program is in
 
   vector<directory_entry*>::const_iterator filesBegin() const; //begin of const iterator to read files in current directory
   vector<directory_entry*>::const_iterator filesEnd() const; //end of const iterator to read files in current directory
