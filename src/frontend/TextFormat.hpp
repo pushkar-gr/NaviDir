@@ -14,5 +14,6 @@ enum FormatType {
 };
 
 string formatText(const path&, FormatType);
+string formatText(const directory_entry&, FormatType);
 
 #endif

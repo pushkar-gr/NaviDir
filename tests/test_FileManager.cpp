@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "FileManager.hpp"
+#include "Config.hpp"
 
 using namespace std::filesystem;
 
@@ -33,66 +34,74 @@ protected:
 };
 
 TEST_F(FileManagerTest, ConstructorDefault) {
-  FileManager fm;
+  Config config;
+  FileManager fm(&config);
   ASSERT_EQ(*fm.getCurrentPath(), current_path());
 }
 
 TEST_F(FileManagerTest, ConstructorWithPath) {
-  FileManager fm(tempDir);
+  Config config;
+  FileManager fm(tempDir, &config);
   ASSERT_EQ(*fm.getCurrentPath(), tempDir);
 }
 
 TEST_F(FileManagerTest, ConstructorWithDirEntry) {
-  FileManager fm((directory_entry(tempDir)));
+  Config config;
+  FileManager fm((directory_entry(tempDir)), &config);
   ASSERT_EQ(*fm.getCurrentPath(), tempDir);
 }
 
 TEST_F(FileManagerTest, SelectFileByPath) {
+  Config config;
   path filePath = tempDir / "test.txt";
   std::ofstream(filePath) << "content";
 
-  FileManager fm(tempDir);
+  FileManager fm(tempDir, &config);
 
   ASSERT_TRUE(fm.selectFile(filePath));
   ASSERT_EQ(fm.getSelectedFile().path(), filePath);
 }
 
 TEST_F(FileManagerTest, SelectFileByIndex) {
+  Config config;
   path filePath = tempDir / "test.txt";
   std::ofstream(filePath) << "content";
 
-  FileManager fm(tempDir);
+  FileManager fm(tempDir, &config);
 
   fm.selectFile(0);
   ASSERT_EQ(fm.getSelectedFile().path(), filePath);
 }
 
 TEST_F(FileManagerTest, SwitchPath) {
+  Config config;
   path subDir = tempDir / "subDir";
   create_directory(subDir);
 
-  FileManager fm(tempDir);
+  FileManager fm(tempDir, &config);
 
   ASSERT_EQ(fm.switchPath(subDir), subDir);
   ASSERT_EQ(*fm.getCurrentPath(), subDir);
 }
 
 TEST_F(FileManagerTest, SwitchToParent) {
+  Config config;
   path subDir = tempDir / "subDir";
   create_directory(subDir);
 
-  FileManager fm(subDir);
+  FileManager fm(subDir, &config);
 
   ASSERT_EQ(fm.switchToParent(), tempDir);
   ASSERT_EQ(*fm.getCurrentPath(), tempDir);
 }
 
 TEST_F(FileManagerTest, GetSelectedFileContent) {
+  Config config;
   path filePath = tempDir / "test.txt";
   string content = "file content\n";
   std::ofstream(filePath) << content;
 
-  FileManager fm(tempDir);
+  FileManager fm(tempDir, &config);
 
   fm.selectFile(filePath);
   
@@ -100,6 +109,7 @@ TEST_F(FileManagerTest, GetSelectedFileContent) {
 }
 
 TEST_F(FileManagerTest, FileIterators) {
+  Config config;
   path p1 = tempDir / "test1";
   create_directory(p1);
   path p2 = tempDir / "test2";
@@ -107,7 +117,7 @@ TEST_F(FileManagerTest, FileIterators) {
   path p3 = tempDir / "test3";
   create_directory(p3);
 
-  FileManager fm(tempDir);
+  FileManager fm(tempDir, &config);
 
   auto it = fm.filesBegin();
   ASSERT_EQ((*(it++))->path(), p1);

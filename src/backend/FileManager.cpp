@@ -60,15 +60,16 @@ bool FileManager::applyNoneFilterSelected() { //fills the filter vector with poi
   return true;
 }
 
-FileManager::FileManager(const directory_entry& entry) { //calls switchPath and initializes class in given directory
+FileManager::FileManager(const directory_entry& entry, Config *inputConfig) { //calls switchPath and initializes class in given directory
+  config = inputConfig;
   switchPath(entry, true);
 }
 
-FileManager::FileManager() : FileManager(current_path()) {} //class constructor to initializes class in PWD
+FileManager::FileManager(Config *inputConfig) : FileManager(current_path(), inputConfig) {} //class constructor to initializes class in PWD
 
-FileManager::FileManager(const path& path) : FileManager(directory_entry(path)) {} //calls switchPath and initializes class in given path
+FileManager::FileManager(const path& path, Config *inputConfig) : FileManager(directory_entry(path), inputConfig) {} //calls switchPath and initializes class in given path
 
-FileManager::FileManager(const FileManager& fm) : FileManager(*fm.getCurrentPath()) {} 
+FileManager::FileManager(const FileManager& fm) : FileManager(*fm.getCurrentPath(), fm.config) {} 
 
 const path *FileManager::getCurrentPath() const { //returns currentPath
   return &currentPath;

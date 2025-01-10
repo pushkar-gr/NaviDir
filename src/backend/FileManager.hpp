@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <fstream>
 #include "../frontend/TextFormat.hpp"
+#include "../config/Config.hpp"
 
 using namespace std::filesystem;
 using namespace std;
@@ -17,6 +18,7 @@ enum FilterType {
 
 class FileManager {
 private:
+  Config *config;
   path currentPath; //path of current directory
   vector<directory_entry> currentFiles; //vector of files in current directory
   vector<directory_entry*> currentFilesFiltered; //vector of files in current directory with filter applied
@@ -40,9 +42,9 @@ private:
   bool applyNoneFilter(); //apply NONE filter
 
 public:
-  FileManager(const directory_entry&); //constructor, initializes at given directory
-  FileManager(); //constructor, initializes at current directory
-  FileManager(const path&); //constructor, initializes at given path
+  FileManager(const directory_entry&, Config*); //constructor, initializes at given directory
+  FileManager(Config*); //constructor, initializes at current directory
+  FileManager(const path&, Config*); //constructor, initializes at given path
   FileManager(const FileManager&); //constructor, initilizes from given object
 
   const path *getCurrentPath() const; //gets the current directory program is in

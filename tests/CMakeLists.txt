@@ -9,7 +9,7 @@ set(TEST_SOURCES
 
 add_executable(NaviDirTests ${TEST_SOURCES})
 
-target_link_libraries(NaviDirTests PRIVATE frontend backend GTest::GTest GTest::Main)
+target_link_libraries(NaviDirTests PRIVATE frontend backend config GTest::GTest GTest::Main)
 target_link_libraries(NaviDirTests PRIVATE ftxui::dom ftxui::screen ftxui::component)
 
 target_include_directories(NaviDirTests PRIVATE

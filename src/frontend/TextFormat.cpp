@@ -1,4 +1,6 @@
 #include "TextFormat.hpp"
+#include <filesystem>
+#include <string>
 
 unordered_map<string, string> fileIcons = {
   {".cpp", " "},
@@ -49,4 +51,8 @@ string formatText(const path& path, FormatType type) {
     }
   };
   return path;
+}
+
+string formatText(const directory_entry& entry, FormatType type) {
+  return formatText(entry.path(), type);
 }
