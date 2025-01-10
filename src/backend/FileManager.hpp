@@ -18,7 +18,7 @@ enum FilterType {
 
 class FileManager {
 private:
-  Config *config;
+  Config *config; //pointer to config
   path currentPath; //path of current directory
   vector<directory_entry> currentFiles; //vector of files in current directory
   vector<directory_entry*> currentFilesFiltered; //vector of files in current directory with filter applied
