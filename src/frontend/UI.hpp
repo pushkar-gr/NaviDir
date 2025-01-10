@@ -1,9 +1,11 @@
 #ifndef UI_HPP
 #define UI_HPP
 #include "../backend/FileManager.hpp"
+#include "../config/Config.hpp"
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/component_base.hpp"
 #include "ftxui/component/screen_interactive.hpp"
+#include <filesystem>
 #include <ftxui/component/event.hpp>
 #include <string>
 #include <vector>
@@ -13,9 +15,34 @@ using namespace ftxui;
 
 
 enum SelectedElement {
-  currentFiles, //file tree where all the files in current directory is displayed
-  selectedFiles, //display content of selected file
+  files, //file tree where all the files in current directory is displayed
   cli, //cli for user actions
+};
+
+enum UserInput {
+  left,
+  right,
+  up,
+  down,
+  scrollLeft,
+  scrollRight,
+  scrollUp,
+  scrollDown,
+  createFile,
+  renameFileName,
+  renameFileWithExt,
+  moveFile,
+  deleteFile,
+  copyFile,
+  cutFile,
+  pasteFile,
+  find,
+  copyContent,
+  toggleHiddenFiles,
+  togglePermissions,
+  toggleSize,
+  toggleDateModified,
+  quit,
 };
 
 class UI {
@@ -28,19 +55,25 @@ private:
 
   Component createSelectedFileComp(const string *); //creates the display component which displays the content or files in selected file
 
-  Component createCliComp(string *); //creates the cli Component in which user can input cmds
+  Component createCliComp(string *, string *); //creates the cli Component in which user can input cmds
 
   Component afterRenderFunc(); //a function that runs after rendering root component
 
   bool handleInput(Event); //handls input
 
-  bool processCliInput();
-
-  void displayOutput(string); //displays the output in cliOutputComp
+  bool processInput(UserInput); //process user input
 
   SelectedElement selectedElement; //focused element
+  
+  UserInput inputAction; //user input
 
   FileManager *fm; //pointer to backend file manager
+
+  Config *config; //pointer to config
+
+  directory_entry copyCutFile; //user copied or cut file
+
+  ScreenInteractive screen; //TerminalScreen
 
   Component rootComp; //the root component
 
@@ -57,10 +90,11 @@ private:
   Component selectedFileComp; //component to display contents of selected file
 
   string cliText; //input for the cli
+  string cliInput;
   Component cliComp; //cli component
 
 public:
-  UI(FileManager *fm); //constructor to create UI
+  UI(FileManager *, Config *); //constructor to create UI
 
   ~UI(); //destructor, does nothing for now
 };
