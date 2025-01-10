@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <fstream>
+#include "../frontend/TextFormat.hpp"
 
 using namespace std::filesystem;
 using namespace std;

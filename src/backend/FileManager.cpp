@@ -1,4 +1,5 @@
 #include "FileManager.hpp"
+#include <string>
 
 void FileManager::updateFiles(vector<directory_entry>& vec, const directory_entry& entry) { //clears the vector and fills it with files from given directory
   vec.clear();
@@ -26,8 +27,10 @@ void FileManager::updateSelectedData() { //updates selectedFileChildren or selec
       return;
     }
     string content, line;
-    while (getline(file, line)) {
-      content += line + "\n";
+    int line_number = 0;
+    while (++line_number < 100 && getline(file, line)) {
+      content += (line_number < 10 ? " " : "") + to_string(line_number) + " " + line;
+      content.push_back(0xa);
     }
     selectedFileContent = content;
     selectedFileDisplayContent = content;
@@ -39,7 +42,7 @@ bool FileManager::applyNoneFilterCurrent() { //fills the filter vector with poin
   currentFilesString.clear();
   for (directory_entry &entry : currentFiles) {
     currentFilesFiltered.push_back(&entry);
-    currentFilesString.push_back(entry.path().filename()); //todo: call formatString from forntend to add any icon/color to the string
+    currentFilesString.push_back(formatText(entry.path().filename(), FormatType::NerdFont));
   }
   return true;
 }
@@ -52,7 +55,7 @@ bool FileManager::applyNoneFilterSelected() { //fills the filter vector with poi
   selectedFileChildrenFiltered.clear();
   for (directory_entry &entry : selectedFileChildren) {
     selectedFileChildrenFiltered.push_back(&entry);
-    selectedFileDisplayContent += entry.path().filename(); //todo: call formatString from forntend to add any icon/color to the string
+    selectedFileDisplayContent += formatText(entry.path().filename(), FormatType::NerdFont);
     selectedFileDisplayContent.push_back(0xa);
   }
   return true;
