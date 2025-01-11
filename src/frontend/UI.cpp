@@ -273,16 +273,19 @@ bool UI::processInput(UserInput input) {
 
     case UserInput::togglePermissions: {
       config->togglePerms();
+      fm->refresh();
       break;
     }
 
     case UserInput::toggleSize: {
       config->toggleFileSize();
+      fm->refresh();
       break;
     }
 
     case UserInput::toggleDateModified: {
       config->toggleDateMod();
+      fm->refresh();
       break;
     }
 
@@ -299,6 +302,8 @@ bool UI::processInput(UserInput input) {
 //will get the data from backend and create UI
 UI::UI(FileManager *fileManager, Config *inputConfig) : screen(ScreenInteractive::Fullscreen()) {
   fm = fileManager;
+
+  config = inputConfig;
 
   currentDirectory = fm->getCurrentPath();
   currentDirectoryComp = createCurrentDirComp(currentDirectory);

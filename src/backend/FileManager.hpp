@@ -79,6 +79,8 @@ public:
   bool applyFilterCurrent(FilterType); //applies filter to files in currentFiles
   bool applyFilterSelected(FilterType); //applies filter to files in selectedFileChildren
 
+  bool refresh(); //refreshes current and selected data
+
   ~FileManager(); //destructor, does nothing as of now
 };
 

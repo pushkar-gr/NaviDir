@@ -41,7 +41,7 @@ bool FileManager::applyNoneFilterCurrent() { //fills the filter vector with poin
   currentFilesString.clear();
   for (directory_entry &entry : currentFiles) {
     currentFilesFiltered.push_back(&entry);
-    currentFilesString.push_back(formatText(entry.path().filename(), FormatType::NerdFont));
+    currentFilesString.push_back(formatText(entry.path().filename(), FormatType::NerdFont, config));
   }
   return true;
 }
@@ -54,7 +54,7 @@ bool FileManager::applyNoneFilterSelected() { //fills the filter vector with poi
   selectedFileChildrenFiltered.clear();
   for (directory_entry &entry : selectedFileChildren) {
     selectedFileChildrenFiltered.push_back(&entry);
-    selectedFileDisplayContent += formatText(entry.path().filename(), FormatType::NerdFont);
+    selectedFileDisplayContent += formatText(entry.path().filename(), FormatType::NerdFont, config);
     selectedFileDisplayContent.push_back(0xa);
   }
   return true;
@@ -241,6 +241,10 @@ bool FileManager::applyFilterSelected(FilterType type) { //calls respective filt
     return applyNoneFilterSelected();
   }
   return false;
+}
+
+bool FileManager::refresh() { //applies selected filter
+  return applyFilter(FilterType::NONE); //todo: change NONE and use filter from config
 }
 
 FileManager::~FileManager() {} //destructor
