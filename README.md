@@ -7,10 +7,9 @@ A simple terminal based file explorer</li>
   <li><code>git clone https://github.com/ArthurSonzogni/FTXUI.git lib/FTXUI</code></li>
   <li>install cmake and gtest</li>
   <li><code>mkdir build</code></li>
-  <li><code>cd build</code></li>
-  <li><code>cmake ..</code></li>
-  <li><code>make</code></li>
-  <li><code>bin/NaviDir</code></li>
+  <li><code>cmake -S . -B build</code></li>
+  <li><code>cmake --build build</code></li>
+  <li><code>build/bin/NaviDir</code></li>
 </ul>
 
 <h1>Pre-requisite: </h1>
@@ -50,6 +49,7 @@ A simple terminal based file explorer</li>
   <li>Clone the repo</li>
   <li>Make changes</li>
   <li>Write approtiate tests</li>
+  <li>Build tests: <code>cmake --build build --target NaviDirTests</code></li>
   <li>Pass all tets (<code>build/bin/NaviDirTests</code>)</li>
   <li>Make a PR</li>
 </ul>

@@ -1,3 +1,6 @@
+cmake_minimum_required(VERSION 3.12)
+project(NaviDir)
+
 add_subdirectory(frontend)
 add_subdirectory(backend)
 add_subdirectory(config)
@@ -14,3 +17,8 @@ target_include_directories(NaviDir PRIVATE
 
 target_link_libraries(NaviDir PRIVATE ftxui::dom ftxui::screen ftxui::component)
 
+option(BUILD_TESTS "Build tests" OFF)
+
+if (BUILD_TESTS)
+  add_subdirectory(tests)
+endif()

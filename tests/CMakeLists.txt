@@ -17,6 +17,7 @@ target_include_directories(NaviDirTests PRIVATE
   ${CMAKE_SOURCE_DIR}/src/backend
 )
 
-enable_testing()
+set_target_properties(NaviDirTests PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
+enable_testing()
 add_test(NAME NaviDirTests COMMAND NaviDirTests)
