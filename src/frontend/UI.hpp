@@ -37,6 +37,7 @@ enum UserInput {
   cutFile,
   pasteFile,
   find,
+  cleanFind,
   toggleHiddenFiles,
   togglePermissions,
   toggleSize,

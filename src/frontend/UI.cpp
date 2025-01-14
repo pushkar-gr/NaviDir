@@ -121,6 +121,8 @@ bool UI::handleInput(Event event) {
     return processInput(UserInput::pasteFile);
   } else if (event == Event::Special("/") || event == Event::f || event == Event::CtrlF) {
     return processInput(UserInput::find);
+  } else if (event == Event::F) {
+    return processInput(UserInput::cleanFind);
   } else if (event == Event::v) {
     return processInput(UserInput::toggleHiddenFiles);
   } else if (event == Event::b) {
@@ -250,6 +252,12 @@ bool UI::processInput(UserInput input) {
     case UserInput::find: {
       cliText = "Filter: ";
       cliInput = "";
+      break;
+    }
+
+    case UserInput::cleanFind: {
+      cliText = "Cleared filter";
+      config->setFilter("");
       break;
     }
 
