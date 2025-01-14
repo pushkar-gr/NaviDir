@@ -121,8 +121,6 @@ bool UI::handleInput(Event event) {
     return processInput(UserInput::pasteFile);
   } else if (event == Event::Special("/") || event == Event::f || event == Event::CtrlF) {
     return processInput(UserInput::find);
-  } else if (event == Event::x || event == Event::c) {
-    return processInput(UserInput::copyContent);
   } else if (event == Event::v) {
     return processInput(UserInput::toggleHiddenFiles);
   } else if (event == Event::b) {
@@ -252,17 +250,6 @@ bool UI::processInput(UserInput input) {
     case UserInput::find: {
       cliText = "Filter: ";
       cliInput = "";
-      break;
-    }
-
-    case UserInput::copyContent: {
-      directory_entry selectedFile = fm->getSelectedFile();
-      if (selectedFile.is_directory()) {
-        cliText = "Select a text file to copy content";
-        return false;
-      }
-      //copy content code
-      cliText = "Copied content of file " + selectedFile.path().string();
       break;
     }
 

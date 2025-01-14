@@ -36,7 +36,6 @@ A simple terminal based file explorer</li>
   <li><code>Shift + y</code>: cut file</li>
   <li><code>p</code>: paste file</li>
   <li><code>f</code>: filter files</li>
-  <li><code>x</code>: copy file content</li>
   <li><code>v</code>: toggle hidden file</li>
   <li><code>b</code>: toggle file permissions</li>
   <li><code>n</code>: toggle file size</li>
