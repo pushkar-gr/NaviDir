@@ -55,8 +55,8 @@ public:
   int *getSelectedIndex(); //gets pointer to selectedIndex
   const directory_entry& getSelectedFile() const; //gets selected file
 
-  bool selectFile(directory_entry&, bool skipCheck=false); //selects the given file
-  bool selectFile(path&, bool skipCheck=false); //selelcts the given file
+  bool selectFile(const directory_entry&, bool skipCheck=false); //selects the given file
+  bool selectFile(const path&, bool skipCheck=false); //selelcts the given file
   bool selectFile(); //updates the selected file based on index
   bool selectFile(int); //updates the index and selected file
   bool incrementSelected(bool cycle=true); //selects next file in the current directory
@@ -80,6 +80,12 @@ public:
   bool applyFilterSelected(FilterType); //applies filter to files in selectedFileChildren
 
   bool refresh(); //refreshes current and selected data
+
+  bool createFile(const path&); //creates new file
+  bool renameSelected(const path&); //renames selected file
+  bool deleteSelected(); //delets selected file
+  bool pasteCopiedFile(const path&); //paste copied file
+  bool pasteCutFile(const path&); //paste cut file
 
   ~FileManager(); //destructor, does nothing as of now
 };

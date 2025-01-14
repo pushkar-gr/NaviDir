@@ -1,4 +1,9 @@
 #include "FileManager.hpp"
+#include <cstdio>
+#include <filesystem>
+#include <fstream>
+#include <sys/stat.h>
+#include <sys/wait.h>
 
 void FileManager::updateFiles(vector<directory_entry>& vec, const directory_entry& entry) { //clears the vector and fills it with files from given directory
   vec.clear();
@@ -95,7 +100,7 @@ const directory_entry& FileManager::getSelectedFile() const { //returns selected
   return selectedFile;
 }
 
-bool FileManager::selectFile(directory_entry& entry, bool skipCheck) { //selects given entry
+bool FileManager::selectFile(const directory_entry& entry, bool skipCheck) { //selects given entry
   if (! skipCheck) {
     for (int i = 0; i < currentFilesFiltered.size(); i++) {
       if (*(currentFilesFiltered)[i] == entry) {
@@ -113,7 +118,7 @@ bool FileManager::selectFile(directory_entry& entry, bool skipCheck) { //selects
   return true;
 }
 
-bool FileManager::selectFile(path& path, bool skipCheck) { //calls selectFile(directory_entry&, bool)
+bool FileManager::selectFile(const path& path, bool skipCheck) { //calls selectFile(directory_entry&, bool)
   directory_entry entry(path);
   return selectFile(entry, skipCheck);
 }
@@ -245,6 +250,46 @@ bool FileManager::applyFilterSelected(FilterType type) { //calls respective filt
 
 bool FileManager::refresh() { //applies selected filter
   return applyFilter(FilterType::NONE); //todo: change NONE and use filter from config
+}
+
+bool FileManager::createFile(const path& path) {
+  string pathString = path.string();
+  char lastChar = pathString.at(pathString.size() - 1);
+  if (lastChar == '/' || lastChar == '\\') {
+    create_directory(path);
+  } else {
+    ofstream file(pathString);
+  }
+  switchPath(currentPath);
+  return selectFile(path);
+}
+
+bool FileManager::renameSelected(const path& path) {
+  rename(selectedFile, path);
+  switchPath(currentPath);
+  return selectFile(path);
+}
+
+bool FileManager::deleteSelected() {
+  int index = selectedIndex;
+  remove(selectedFile);
+  switchPath(currentPath);
+  selectFile(index);
+  return true;
+}
+
+bool FileManager::pasteCopiedFile(const path& path) {
+  class path newPath = currentPath/path.filename();
+  copy(path, newPath);
+  switchPath(currentPath);
+  return selectFile(newPath);
+}
+
+bool FileManager::pasteCutFile(const path& path) {
+  class path newPath = currentPath/path.filename();
+  rename(path, newPath);
+  switchPath(currentPath);
+  return selectFile(newPath);
 }
 
 FileManager::~FileManager() {} //destructor

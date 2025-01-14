@@ -73,19 +73,25 @@ Component UI::afterRenderFunc() {
 
 //handles user input
 bool UI::handleInput(Event event) {
-  if (selectedElement == SelectedElement::cli) {
-    if (event == Event::Return) {
-      //process cli input
+  if (selectedElement == SelectedElement::cli) { //checks if cli is selected
+    if (event == Event::Return) { //if user input is enter, selects file manager and processes cli input
       selectedElement = SelectedElement::files;
-    } else if (event == Event::Escape) {
+      processCliInput();
+    } else if (event == Event::Escape) { //if user input is escape, clears cli and selects file manager
       cliText = cliInput = "";
       selectedElement = SelectedElement::files;
-    } else if (event == Event::Backspace) {
-      if (cliInput.size() > 0) {
+    } else if (event == Event::Backspace) { //backspace
+      if (cliInput.size() > 0) { //if there is any character, pop one
         cliInput.pop_back();
+        if (inputAction == UserInput::find) { //if filter is active, update filter
+          config->setFilter(cliInput);
+        }
       }
     } else {
-      cliInput += event.character();
+      cliInput += event.character(); //append character
+      if (inputAction == UserInput::find) { //update filter if activated
+        config->setFilter(cliInput);
+      }
     }
   } else if (event == Event::h || event == Event::ArrowLeft) {
     return processInput(UserInput::left);
@@ -131,12 +137,15 @@ bool UI::handleInput(Event event) {
     return processInput(UserInput::toggleSize);
   } else if (event == Event::m) {
     return processInput(UserInput::toggleDateModified);
+  } else if (event == Event::t) {
+    return processInput(UserInput::refresh);
   } else if (event == Event::q) {
     return processInput(UserInput::quit);
   }
   return false;
 }
 
+//process user input
 bool UI::processInput(UserInput input) {
   inputAction = input;
   switch (input) {
@@ -197,9 +206,9 @@ bool UI::processInput(UserInput input) {
 
     case UserInput::renameFileName: {
       cliInput = fm->getSelectedFile().path().filename();
-      size_t pos = cliInput.find_last_of('.');
+      size_t pos = cliInput.find_last_of('.'); //check for extension
       if (pos != string::npos && pos != 0) {
-        cliInput.erase(pos);
+        cliInput.erase(pos); //remove extension if found
       }
       cliText = "Rename file " + cliInput + " to: ";
       selectedElement = SelectedElement::cli;
@@ -229,23 +238,36 @@ bool UI::processInput(UserInput input) {
 
     case UserInput::copyFile: {
       copyCutFile = fm->getSelectedFile();
+      isCopyFile = true;
       cliText = "Copied file " + formatText(copyCutFile.path().filename(), FormatType::Simple);
       break;
     }
 
     case UserInput::cutFile: {
       copyCutFile = fm->getSelectedFile();
+      isCopyFile = false;
       cliText = "Cut file " + formatText(copyCutFile.path().filename(), FormatType::Simple);
       break;
     }
 
     case UserInput::pasteFile: {
-      if (! copyCutFile.exists()) {
+      if (! copyCutFile.exists()) { //file not copied or cut
         cliText = "Copy or cut a file to paste";
         return false;
       }
-      //paste file code
-      cliText = "Pasted file " + formatText(copyCutFile, FormatType::Simple);
+      cliInput = "";
+      bool isSucuss = false;
+      if (isCopyFile) {
+        isSucuss = fm->pasteCopiedFile(copyCutFile);
+      } else {
+        isSucuss = fm->pasteCutFile(copyCutFile);
+      }
+      if (isSucuss) {
+        cliText = "File pasted";
+      } else {
+        cliText = "Failed to paste file";
+      }
+      return isSucuss;
       break;
     }
 
@@ -284,6 +306,11 @@ bool UI::processInput(UserInput input) {
       break;
     }
 
+    case UserInput::refresh: {
+      fm->refresh();
+      break;
+    }
+
     case UserInput::quit: { 
       screen.Exit();
       break;
@@ -291,6 +318,66 @@ bool UI::processInput(UserInput input) {
       
   }
   return true;
+}
+
+//process cli input
+bool UI::processCliInput() {
+  if (inputAction == UserInput::createFile) {
+    const path file = path(cliInput);
+    cliInput = "";
+    if (fm->createFile(file)) {
+      cliText = "File created";
+      return true;
+    } else {
+      cliText = "Failed to create file";
+      return false;
+    }
+  } else if (inputAction == UserInput::renameFileName) {
+    const path file = path(cliInput + fm->getSelectedFile().path().extension().string());
+    cliInput = "";
+    if (fm->renameSelected(*currentDirectory/file)) {
+      cliText = "File renamed";
+      return true;
+    } else {
+      cliText = "Failed to rename file";
+      return false;
+    }
+  } else if (inputAction == UserInput::renameFileWithExt) {
+    const path file = path(cliInput);
+    cliInput = "";
+    if (fm->renameSelected(*currentDirectory/file)) {
+      cliText = "File renamed";
+      return true;
+    } else {
+      cliText = "Failed to rename file";
+      return false;
+    }
+  } else if (inputAction == UserInput::moveFile) {
+    const path file = path(cliInput);
+    cliInput = "";
+    if (fm->renameSelected(file)) {
+      cliText = "File moved";
+      return true;
+    } else {
+      cliText = "Failed to move file";
+      return false;
+    }
+  } else if (inputAction == UserInput::deleteFile) {
+    if (cliInput.size() == 1 && tolower(cliInput.at(0)) == 'y') { //if cli input is y
+      cliInput = "";
+      if (fm->deleteSelected()) {
+        cliText = "File deleted";
+        return true;
+      } else {
+        cliText = "Failed to delete file";
+        return false;
+      }
+    } else {
+      cliInput = "";
+      cliText = "";
+    }
+  }
+  return false;
 }
 
 //constructor
