@@ -300,8 +300,13 @@ bool FileManager::renameSelected(const path& path, string *output) {
     *output = "File already exists";
     return false;
   }
-  rename(selectedFile, path);
-  return refresh();
+  try {
+    rename(selectedFile, path);
+    return refresh();
+  } catch (const filesystem_error& e) {
+    *output = e.what();
+    return false;
+  }
 }
 
 bool FileManager::deleteSelected(string *output) {
