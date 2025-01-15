@@ -1,5 +1,4 @@
 #include "FileManager.hpp"
-#include <filesystem>
 
 bool FileManager::updateFiles(vector<directory_entry>& vec, const directory_entry& entry) { //clears the vector and fills it with files from given directory
   vec.clear();
@@ -335,16 +334,34 @@ bool FileManager::deleteSelected(string *output) {
 
 bool FileManager::pasteCopiedFile(const path& path, string *output) {
   class path newPath = currentPath/path.filename();
-  copy(path, newPath);
-  switchPath(currentPath);
-  return selectFile(newPath);
+  if (exists(newPath)) {
+    *output = "File already exists";
+    return false;
+  }
+  try {
+    copy(path, newPath);
+    refresh();
+    return selectFile(newPath);
+  } catch (const filesystem_error& e) {
+    *output = e.what();
+    return false;
+  }
 }
 
 bool FileManager::pasteCutFile(const path& path, string *output) {
   class path newPath = currentPath/path.filename();
-  rename(path, newPath);
-  switchPath(currentPath);
-  return selectFile(newPath);
+  if (exists(newPath)) {
+    *output = "File already exists";
+    return false;
+  }
+  try {
+    rename(path, newPath);
+    refresh();
+    return selectFile(newPath);
+  } catch (const filesystem_error& e) {
+    *output = e.what();
+    return false;
+  }
 }
 
 FileManager::~FileManager() {} //destructor
