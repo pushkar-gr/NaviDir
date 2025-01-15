@@ -140,7 +140,10 @@ bool FileManager::selectFile() { //calls selectedFile(int)
 
 bool FileManager::selectFile(int index) { //will select the file at index
   if (index < 0 || index >= currentFilesFiltered.size()) {
-    return false; //returns false if index out of range
+    if (currentFilesFiltered.size() == 0) {
+      return false; //no files available
+    }
+    index = currentFilesFiltered.size() - 1;
   }
   selectedIndex = index;
   selectedFile = *(currentFilesFiltered)[index];
@@ -266,40 +269,66 @@ bool FileManager::refresh() { //refreshes data
   return true;
 }
 
-bool FileManager::createFile(const path& path) {
+bool FileManager::createFile(const path& path, string *output) {
+  if (exists(path)) {
+    *output = "File already exists";
+    return false;
+  }
   string pathString = path.string();
   char lastChar = pathString.at(pathString.size() - 1);
-  if (lastChar == '/' || lastChar == '\\') {
-    create_directory(path);
-  } else {
-    ofstream file(pathString);
+  try {
+    if (lastChar == '/' || lastChar == '\\') {
+      create_directory(path);
+      pathString.pop_back();
+    } else {
+      ofstream file(pathString);
+      if (! exists(pathString)) {
+        *output = "Unexpected error occured";
+        return false;
+      }
+    }
+    refresh();
+    return selectFile(pathString);
+  } catch (const exception& e) {
+    *output = e.what();
+    return false;
   }
-  switchPath(currentPath);
-  return selectFile(path);
 }
 
-bool FileManager::renameSelected(const path& path) {
+bool FileManager::renameSelected(const path& path, string *output) {
+  if (exists(path)) {
+    *output = "File already exists";
+    return false;
+  }
   rename(selectedFile, path);
-  switchPath(currentPath);
-  return selectFile(path);
+  return refresh();
 }
 
-bool FileManager::deleteSelected() {
+bool FileManager::deleteSelected(string *output) {
+  if (! selectedFile.exists()) {
+    *output = "File does not exists";
+    refresh();
+    return false;
+  }
   int index = selectedIndex;
-  remove(selectedFile);
+  remove_all(selectedFile);
   switchPath(currentPath);
-  selectFile(index);
+  if (currentFiles.size() == 0) {
+    selectedFileDisplayContent = "";
+  } else {
+    selectFile(index);
+  }
   return true;
 }
 
-bool FileManager::pasteCopiedFile(const path& path) {
+bool FileManager::pasteCopiedFile(const path& path, string *output) {
   class path newPath = currentPath/path.filename();
   copy(path, newPath);
   switchPath(currentPath);
   return selectFile(newPath);
 }
 
-bool FileManager::pasteCutFile(const path& path) {
+bool FileManager::pasteCutFile(const path& path, string *output) {
   class path newPath = currentPath/path.filename();
   rename(path, newPath);
   switchPath(currentPath);

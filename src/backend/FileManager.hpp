@@ -79,11 +79,11 @@ public:
 
   bool refresh(); //refreshes current and selected data
 
-  bool createFile(const path&); //creates new file
-  bool renameSelected(const path&); //renames selected file
-  bool deleteSelected(); //delets selected file
-  bool pasteCopiedFile(const path&); //paste copied file
-  bool pasteCutFile(const path&); //paste cut file
+  bool createFile(const path&, string *); //creates new file
+  bool renameSelected(const path&, string *); //renames selected file
+  bool deleteSelected(string *); //delets selected file
+  bool pasteCopiedFile(const path&, string *); //paste copied file
+  bool pasteCutFile(const path&, string *); //paste cut file
 
   ~FileManager(); //destructor, does nothing as of now
 };
