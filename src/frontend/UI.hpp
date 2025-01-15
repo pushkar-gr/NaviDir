@@ -52,7 +52,7 @@ private:
   Component createCurrentDirComp(const path *); //creates a component to display current directory
   Component createCurrentFilesComp(const vector<string> *, int *); //creates the file component which displays all the files in current directory
   Component createSelectedFileComp(const string *); //creates the display component which displays the content or files in selected file
-  Component createCliComp(string *, string *); //creates the cli Component in which user can input cmds
+  Component createCliComp(string *, string *, string *); //creates the cli Component in which user can input cmds
   Component afterRenderFunc(); //a function that runs after rendering root component
 
   bool handleInput(Event); //handls input
@@ -82,8 +82,9 @@ private:
   const string *selectedFileData; //content to display in selectedFileComp
   Component selectedFileComp; //component to display contents of selected file
 
-  string cliText; //input for the cli
-  string cliInput;
+  string cliText; //cli instruction
+  string cliInput; //input from user
+  string cliOutput; //cli output
   Component cliComp; //cli component
 
 public:
