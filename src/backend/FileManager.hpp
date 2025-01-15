@@ -3,8 +3,6 @@
 #include <filesystem>
 #include <vector>
 #include <string>
-#include <cstddef>
-#include <cstdio>
 #include <fstream>
 #include "../frontend/TextFormat.hpp"
 #include "../config/Config.hpp"
@@ -32,8 +30,8 @@ private:
   string selectedFileContent; //content of selected file(if selected file is not a directory)
   string selectedFileDisplayContent; //contents selectedFileContent if selected file is not a directory, else contains childrend directory in a list form
 
-  void updateFiles(vector<directory_entry>&, const directory_entry&); //fills the vector with files from the specified directory
-  void updateFiles(vector<directory_entry>&, const path&); //fills the vector with files from the specified path
+  bool updateFiles(vector<directory_entry>&, const directory_entry&); //fills the vector with files from the specified directory
+  bool updateFiles(vector<directory_entry>&, const path&); //fills the vector with files from the specified path
 
   void updateSelectedData(); //updates selectedFilesChildren or selectedFileContent depending on selected file type
   

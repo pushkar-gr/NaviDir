@@ -1,33 +1,41 @@
 #include "FileManager.hpp"
-#include <cstdio>
-#include <filesystem>
-#include <fstream>
-#include <sys/stat.h>
-#include <sys/wait.h>
 
-void FileManager::updateFiles(vector<directory_entry>& vec, const directory_entry& entry) { //clears the vector and fills it with files from given directory
+bool FileManager::updateFiles(vector<directory_entry>& vec, const directory_entry& entry) { //clears the vector and fills it with files from given directory
   vec.clear();
-  if (! entry.is_directory()) {
-    return;
+  if (! entry.is_directory()) { //if given file is not a directory
+    selectedFileContent = "File is not a directory";
+    selectedFileDisplayContent = selectedFileContent;
+    return false;
   }
-  for (const auto& entry : directory_iterator(entry)) {
-    vec.push_back(entry);
+  try {
+    for (const auto& entry : directory_iterator(entry)) {
+      vec.push_back(entry);
+    }
+    return true; //return true for success
+  } catch (const filesystem_error& e) {
+    selectedFileContent = e.what();
+    selectedFileDisplayContent = selectedFileContent;
+    return false; //return false for error
   }
+  return true;
 }
 
-void FileManager::updateFiles(vector<directory_entry>& vec, const path& path) { //calls updateFiles(vector<directory_entry>&, directory_entry&) with directory_entry
+bool FileManager::updateFiles(vector<directory_entry>& vec, const path& path) { //calls updateFiles(vector<directory_entry>&, directory_entry&) with directory_entry
   directory_entry entry(path);
-  updateFiles(vec, entry);
+  return updateFiles(vec, entry);
 }
 
 void FileManager::updateSelectedData() { //updates selectedFileChildren or selectedFileContent depending on selectedFile type
   if (selectedFile.is_directory()) {
-    updateFiles(selectedFileChildren, (selectedFile.path())); //fills the vector with files if selectedFile is a directory
+    if (! updateFiles(selectedFileChildren, (selectedFile.path()))) { //fills the vector with files if selectedFile is a directory
+      return; //return if error in reading files in directory
+    }
     applyFilterSelected(NONE); //todo: call respective filter after implimentation
   } else { //writes the content of selectedFile to selectedFileContent if it is not a directory
     ifstream file (selectedFile.path());
-    if (!file) {
+    if (! file) {
       selectedFileContent = "Unable to open file!";
+      selectedFileDisplayContent = selectedFileContent;
       return;
     }
     string content, line;
@@ -249,7 +257,9 @@ bool FileManager::applyFilterSelected(FilterType type) { //calls respective filt
 }
 
 bool FileManager::refresh() { //refreshes data
-  updateFiles(currentFiles, currentPath);
+  if (! updateFiles(currentFiles, currentPath)) {
+    return false;
+  }
   applyFilterCurrent(FilterType::NONE);
   selectFile();
   updateSelectedData();
@@ -297,3 +307,4 @@ bool FileManager::pasteCutFile(const path& path) {
 }
 
 FileManager::~FileManager() {} //destructor
+
