@@ -1,5 +1,4 @@
 #include "TextFormat.hpp"
-#include <filesystem>
 
 unordered_map<string, string> fileIcons = {
   {".cpp", "  "},
