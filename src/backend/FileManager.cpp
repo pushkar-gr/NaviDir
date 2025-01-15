@@ -248,8 +248,12 @@ bool FileManager::applyFilterSelected(FilterType type) { //calls respective filt
   return false;
 }
 
-bool FileManager::refresh() { //applies selected filter
-  return applyFilter(FilterType::NONE); //todo: change NONE and use filter from config
+bool FileManager::refresh() { //refreshes data
+  updateFiles(currentFiles, currentPath);
+  applyFilterCurrent(FilterType::NONE);
+  selectFile();
+  updateSelectedData();
+  return true;
 }
 
 bool FileManager::createFile(const path& path) {
