@@ -235,6 +235,9 @@ bool FileManager::refreshCurrent() {
     if (config->displayHiddenFiles() || entry.path().filename().string().at(0) != '.') {
       currentFilesFiltered.push_back(&entry);
       currentFilesString.push_back(formatText(entry.path(), FormatType::NerdFont, config));
+      if (selectedFile == entry) {
+        selectedIndex = currentFilesFiltered.size() - 1;
+      }
     }
   }
   return true;
