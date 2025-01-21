@@ -14,3 +14,7 @@ add_subdirectory(src)
 add_subdirectory(tests)
 
 enable_testing()
+
+install(TARGETS NaviDir
+  RUNTIME DESTINATION /usr/local/bin
+)

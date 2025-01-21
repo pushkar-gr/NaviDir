@@ -10,6 +10,7 @@ A simple terminal based file explorer</li>
   <li><code>cmake -S . -B build</code></li>
   <li><code>cmake --build build</code></li>
   <li><code>build/bin/NaviDir</code></li>
+  <li>(Optional) to add executable to /bin <code>cd build && sudo cmake --install .</code></li>
 </ul>
 
 <h1>Pre-requisite: </h1>
