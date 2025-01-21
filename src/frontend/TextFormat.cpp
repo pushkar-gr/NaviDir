@@ -1,4 +1,5 @@
 #include "TextFormat.hpp"
+#include <filesystem>
 
 unordered_map<string, string> fileIcons = {
   {".cpp", "  "},
@@ -44,15 +45,15 @@ string formatText(const path& path, FormatType type) {
     }
     case Simple: {
       if (is_directory(path)) {
-        return path.string() + "/";
+        return path.filename().string() + "/";
       }
-      return path;
+      return path.filename();
     }
     case NerdFont: {
-      return getIcon(path) + path.string();
+      return getIcon(path) + path.filename().string();
     }
   };
-  return path;
+  return path.filename();
 }
 
 string formatText(const directory_entry& entry, FormatType type) {
@@ -105,17 +106,18 @@ string formatText(const path& path, FormatType type, Config *config) {
   }
   switch (type) {
     case None: {
-      return text + path.string();
+      return text + path.filename().string();
     }
     case Simple: {
       if (is_directory(path)) {
-        return text + path.string() + "/";
+        return text + path.filename().string() + "/";
       }
-      return text + path.string();
+      return text + path.filename().string();
     }
     case NerdFont: {
-      return getIcon(path) + text + path.string();
+      return getIcon(path) + text + path.filename().string();
     }
   };
-  return text + path.string();
+  return text + path.filename().string();
 } 
+
