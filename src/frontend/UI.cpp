@@ -293,6 +293,7 @@ bool UI::processInput(UserInput input) {
 
     case UserInput::toggleHiddenFiles: {
       config->toggleHiddenFiles();
+      fm->refresh();
       break;
     }
 

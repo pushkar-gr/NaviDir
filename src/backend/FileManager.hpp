@@ -10,10 +10,6 @@
 using namespace std::filesystem;
 using namespace std;
 
-enum FilterType {
-  NONE,
-};
-
 class FileManager {
 private:
   Config *config; //pointer to config
@@ -34,10 +30,6 @@ private:
   bool updateFiles(vector<directory_entry>&, const path&); //fills the vector with files from the specified path
 
   void updateSelectedData(); //updates selectedFilesChildren or selectedFileContent depending on selected file type
-  
-  bool applyNoneFilterCurrent(); //apply NONE filter for current files
-  bool applyNoneFilterSelected(); //apply NONE filter for files in selected file if directory
-  bool applyNoneFilter(); //apply NONE filter
 
 public:
   FileManager(const directory_entry&, Config*); //constructor, initializes at given directory
@@ -72,12 +64,10 @@ public:
   const path& switchPath(path&, bool skipCheck=false); //switchs to given path
   const path& switchPath(); //switches to selected directory (selectedPath)
   const path& switchToParent(); //switches to parent directory
-  
-  bool applyFilter(FilterType); //applies filter to files in currentFiles and selectedFileChildren
-  bool applyFilterCurrent(FilterType); //applies filter to files in currentFiles
-  bool applyFilterSelected(FilterType); //applies filter to files in selectedFileChildren
 
   bool refresh(); //refreshes current and selected data
+  bool refreshCurrent();
+  bool refreshSelected();
 
   bool createFile(const path&, string *); //creates new file
   bool renameSelected(const path&, string *); //renames selected file

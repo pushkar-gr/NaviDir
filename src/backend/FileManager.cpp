@@ -30,7 +30,7 @@ void FileManager::updateSelectedData() { //updates selectedFileChildren or selec
     if (! updateFiles(selectedFileChildren, (selectedFile.path()))) { //fills the vector with files if selectedFile is a directory
       return; //return if error in reading files in directory
     }
-    applyFilterSelected(NONE); //todo: call respective filter after implimentation
+    refreshSelected();
   } else { //writes the content of selectedFile to selectedFileContent if it is not a directory
     ifstream file (selectedFile.path());
     if (! file) {
@@ -47,30 +47,6 @@ void FileManager::updateSelectedData() { //updates selectedFileChildren or selec
     selectedFileContent = content;
     selectedFileDisplayContent = content;
   }
-}
-
-bool FileManager::applyNoneFilterCurrent() { //fills the filter vector with pointer to all the files
-  currentFilesFiltered.clear();
-  currentFilesString.clear();
-  for (directory_entry &entry : currentFiles) {
-    currentFilesFiltered.push_back(&entry);
-    currentFilesString.push_back(formatText(entry.path(), FormatType::NerdFont, config));
-  }
-  return true;
-}
-
-bool FileManager::applyNoneFilterSelected() { //fills the filter vector with pointer to all the files
-  if (! selectedFile.is_directory()) {
-    return false;
-  }
-  selectedFileDisplayContent = "";
-  selectedFileChildrenFiltered.clear();
-  for (directory_entry &entry : selectedFileChildren) {
-    selectedFileChildrenFiltered.push_back(&entry);
-    selectedFileDisplayContent += formatText(entry.path(), FormatType::NerdFont, config);
-    selectedFileDisplayContent.push_back(0xa);
-  }
-  return true;
 }
 
 FileManager::FileManager(const directory_entry& entry, Config *inputConfig) { //calls switchPath and initializes class in given directory
@@ -223,7 +199,7 @@ const path& FileManager::switchPath(const directory_entry entry, bool skipCheck)
   } else {
     updateFiles(currentFiles, currentPath);
   }
-  applyFilterCurrent(NONE);
+  refreshCurrent();
   selectFile();
   return currentPath;
 }
@@ -241,31 +217,42 @@ const path& FileManager::switchToParent() { //calls switchPath(directory_entry&,
   return switchPath(entry, false);
 }
 
-bool FileManager::applyFilter(FilterType type) { //applies filter to both current and selected 
-  return applyFilterCurrent(type) && applyFilterSelected(type);
-}
-
-bool FileManager::applyFilterCurrent(FilterType type) { //calls respective filters
-  if (type == NONE) {
-    return applyNoneFilterCurrent();
-  }
-  return false;
-}
-
-bool FileManager::applyFilterSelected(FilterType type) { //calls respective filters
-  if (type == NONE) {
-    return applyNoneFilterSelected();
-  }
-  return false;
-}
-
 bool FileManager::refresh() { //refreshes data
   if (! updateFiles(currentFiles, currentPath)) {
     return false;
   }
-  applyFilterCurrent(FilterType::NONE);
+  refreshCurrent();
+  refreshSelected();
   selectFile();
   updateSelectedData();
+  return true;
+}
+
+bool FileManager::refreshCurrent() {
+  currentFilesFiltered.clear();
+  currentFilesString.clear();
+  for (directory_entry &entry : currentFiles) {
+    if (config->displayHiddenFiles() || entry.path().filename().string().at(0) != '.') {
+      currentFilesFiltered.push_back(&entry);
+      currentFilesString.push_back(formatText(entry.path(), FormatType::NerdFont, config));
+    }
+  }
+  return true;
+}
+
+bool FileManager::refreshSelected() {
+  if (! selectedFile.is_directory()) {
+    return false;
+  }
+  selectedFileDisplayContent = "";
+  selectedFileChildrenFiltered.clear();
+  for (directory_entry &entry : selectedFileChildren) {
+    if (config->displayHiddenFiles() || entry.path().filename().string().at(0) != '.') {
+      selectedFileChildrenFiltered.push_back(&entry);
+      selectedFileDisplayContent += formatText(entry.path(), FormatType::NerdFont, config);
+      selectedFileDisplayContent.push_back(0xa);
+    }
+  }
   return true;
 }
 
