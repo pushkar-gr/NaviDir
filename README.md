@@ -4,7 +4,7 @@ A simple terminal based file explorer</li>
 <h1>How to run ?</h1>
 <ul>
   <li><code>git clone https://github.com/pushkar-gr/NaviDir.git</code></li>
-  <li><code>git clone https://github.com/ArthurSonzogni/FTXUI.git lib/FTXUI</code></li>
+  <li><code>cd NaviDir</code></li>
   <li>install cmake and gtest</li>
   <li><code>mkdir build</code></li>
   <li><code>cmake -S . -B build</code></li>
