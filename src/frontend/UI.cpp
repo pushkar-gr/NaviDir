@@ -261,18 +261,18 @@ bool UI::processInput(UserInput input) {
       }
       cliInput = "";
       cliOutput = "";
-      bool isSucuss = false;
+      bool isSuccess = false;
       if (isCopyFile) {
-        isSucuss = fm->pasteCopiedFile(copyCutFile, &cliOutput);
+        isSuccess = fm->pasteCopiedFile(copyCutFile, &cliOutput);
       } else {
-        isSucuss = fm->pasteCutFile(copyCutFile, &cliOutput);
+        isSuccess = fm->pasteCutFile(copyCutFile, &cliOutput);
       }
-      if (isSucuss) {
+      if (isSuccess) {
         cliText = "File pasted";
       } else {
         cliText = "Failed to paste file";
       }
-      return isSucuss;
+      return isSuccess;
       break;
     }
 
