@@ -7,7 +7,7 @@ int main(int size, char **args) {
   Config config;
   FileManager *fm;
   if (size == 2) {
-    path path = args[1];
+    path path = current_path()/args[1];
     if (exists(path)) {
       fm = new FileManager(path, &config);
     } else {
