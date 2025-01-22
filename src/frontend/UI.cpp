@@ -1,4 +1,7 @@
 #include "UI.hpp"
+#include <cstdlib>
+#include <string>
+#include <unistd.h>
 
 //creates the root Component
 //left: currentFiles
@@ -97,7 +100,7 @@ bool UI::handleInput(Event event) {
     }
   } else if (event == Event::h || event == Event::ArrowLeft) {
     return processInput(UserInput::left);
-  } else if (event == Event::l || event == Event::ArrowRight || (event == Event::Return && fm->isSelectedDirectory())) {
+  } else if (event == Event::l || event == Event::ArrowRight) {
     return processInput(UserInput::right);
   } else if (event == Event::k || event == Event::ArrowUp) {
     return processInput(UserInput::up);
@@ -141,6 +144,8 @@ bool UI::handleInput(Event event) {
     return processInput(UserInput::toggleDateModified);
   } else if (event == Event::t) {
     return processInput(UserInput::refresh);
+  } else if (event == Event::z) {
+    return processInput(UserInput::open);
   } else if (event == Event::q) {
     return processInput(UserInput::quit);
   }
@@ -325,6 +330,18 @@ bool UI::processInput(UserInput input) {
     case UserInput::refresh: {
       fm->refresh();
       break;
+    }
+
+    case UserInput::open: {
+      string command = "xdg-open " + fm->getSelectedFile().path().string() + "&";
+      int result = system(command.c_str());
+      cliInput = "";
+      cliOutput = "";
+      if (result != 0) {
+        cliText = "Opened file " + fm->getSelectedFile().path().string();
+      } else {
+        cliText = "Failed to open " + to_string(result);
+      }
     }
 
     case UserInput::quit: { 

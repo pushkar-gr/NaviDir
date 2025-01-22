@@ -41,6 +41,7 @@ A simple terminal based file explorer</li>
   <li><code>b</code>: toggle file permissions</li>
   <li><code>n</code>: toggle file size</li>
   <li><code>m</code>: toggle modification date</li>
+  <li><code>Enter</code>: open selected file</li>
   <li><code>q</code>: quit</li>
 </ul>
 

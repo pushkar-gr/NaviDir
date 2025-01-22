@@ -2,13 +2,14 @@
 #define UI_HPP
 #include "../backend/FileManager.hpp"
 #include "../config/Config.hpp"
-#include "ftxui/component/component.hpp"
-#include "ftxui/component/component_base.hpp"
-#include "ftxui/component/screen_interactive.hpp"
-#include <filesystem>
+#include <ftxui/component/component.hpp>
+#include <ftxui/component/component_base.hpp>
+#include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/component/event.hpp>
+#include <filesystem>
 #include <string>
 #include <vector>
+#include <cstdlib>
 
 using namespace std;
 using namespace ftxui;
@@ -43,6 +44,7 @@ enum UserInput {
   toggleSize,
   toggleDateModified,
   refresh,
+  open,
   quit,
 };
 
