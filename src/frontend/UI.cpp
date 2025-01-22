@@ -77,17 +77,22 @@ bool UI::handleInput(Event event) {
     } else if (event == Event::Escape) { //if user input is escape, clears cli and selects file manager
       cliText = cliInput = "";
       selectedElement = SelectedElement::files;
+      if (inputAction == UserInput::find) {
+        return processInput(UserInput::cleanFind);
+      }
     } else if (event == Event::Backspace) { //backspace
       if (cliInput.size() > 0) { //if there is any character, pop one
         cliInput.pop_back();
         if (inputAction == UserInput::find) { //if filter is active, update filter
           config->setFilter(cliInput);
+          fm->refresh();
         }
       }
     } else {
       cliInput += event.character(); //append character
       if (inputAction == UserInput::find) { //update filter if activated
         config->setFilter(cliInput);
+        fm->refresh();
       }
     }
   } else if (event == Event::h || event == Event::ArrowLeft) {
@@ -280,6 +285,7 @@ bool UI::processInput(UserInput input) {
       cliText = "Filter: ";
       cliInput = "";
       cliOutput = "";
+      selectedElement = SelectedElement::cli;
       break;
     }
 
@@ -288,6 +294,7 @@ bool UI::processInput(UserInput input) {
       cliInput = "";
       cliOutput = "";
       config->setFilter("");
+      fm->refresh();
       break;
     }
 

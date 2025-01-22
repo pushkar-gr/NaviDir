@@ -1,4 +1,6 @@
 #include "FileManager.hpp"
+#include <cctype>
+#include <string>
 
 bool FileManager::updateFiles(vector<directory_entry>& vec, const directory_entry& entry) { //clears the vector and fills it with files from given directory
   vec.clear();
@@ -228,11 +230,31 @@ bool FileManager::refresh() { //refreshes data
   return true;
 }
 
+bool isEqual(string s1, string s2) {
+  if (s1.size() > s2.size()) {
+    return false;
+  }
+  for (int i = 0; i < s1.size(); i++) {
+     if (tolower(s1.at(i)) != tolower(s2.at(i))) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool FileManager::refreshCurrent() {
   currentFilesFiltered.clear();
   currentFilesString.clear();
   for (directory_entry &entry : currentFiles) {
-    if (config->displayHiddenFiles() || entry.path().filename().string().at(0) != '.') {
+    if (config->getFileter().size() != 0) {
+      if (isEqual(config->getFileter(), entry.path().filename())) {
+        currentFilesFiltered.push_back(&entry);
+        currentFilesString.push_back(formatText(entry.path(), FormatType::NerdFont, config));
+        if (selectedFile == entry) {
+          selectedIndex = currentFilesFiltered.size() - 1;
+        }
+      }
+    } else if (config->displayHiddenFiles() || entry.path().filename().string().at(0) != '.') {
       currentFilesFiltered.push_back(&entry);
       currentFilesString.push_back(formatText(entry.path(), FormatType::NerdFont, config));
       if (selectedFile == entry) {
