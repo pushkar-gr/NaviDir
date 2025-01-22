@@ -106,14 +106,14 @@ bool UI::handleInput(Event event) {
     return processInput(UserInput::up);
   } else if (event == Event::j || event == Event::ArrowDown) {
     return processInput(UserInput::down);
-  } else if (event == Event::CtrlH || event == Event::ArrowLeftCtrl || event == Event::Backspace || (event.is_mouse() && event.mouse().button == Mouse::WheelLeft)) {
-    return processInput(UserInput::scrollLeft);
-  } else if (event == Event::CtrlL || event == Event::ArrowRightCtrl || (event.is_mouse() && event.mouse().button == Mouse::WheelRight)) {
-    return processInput(UserInput::scrollRight);
-  } else if (event == Event::CtrlK || event == Event::ArrowUpCtrl || (event.is_mouse() && event.mouse().button == Mouse::WheelUp)) {
-    return processInput(UserInput::scrollUp);
-  } else if (event == Event::CtrlJ || event == Event::ArrowDownCtrl || (event == Event::Return && ! fm->isSelectedDirectory()) || (event.is_mouse() && event.mouse().button == Mouse::WheelDown)) {
-    return processInput(UserInput::scrollDown);
+  /*} else if (event == Event::CtrlH || event == Event::ArrowLeftCtrl || event == Event::Backspace || (event.is_mouse() && event.mouse().button == Mouse::WheelLeft)) {*/
+  /*  return processInput(UserInput::scrollLeft);*/
+  /*} else if (event == Event::CtrlL || event == Event::ArrowRightCtrl || (event.is_mouse() && event.mouse().button == Mouse::WheelRight)) {*/
+  /*  return processInput(UserInput::scrollRight);*/
+  /*} else if (event == Event::CtrlK || event == Event::ArrowUpCtrl || (event.is_mouse() && event.mouse().button == Mouse::WheelUp)) {*/
+  /*  return processInput(UserInput::scrollUp);*/
+  /*} else if (event == Event::CtrlJ || event == Event::ArrowDownCtrl || (event.is_mouse() && event.mouse().button == Mouse::WheelDown)) {*/
+  /*  return processInput(UserInput::scrollDown);*/
   } else if (event == Event::a || event == Event::CtrlN) {
     return processInput(UserInput::createFile);
   } else if (event == Event::e) {
@@ -144,7 +144,7 @@ bool UI::handleInput(Event event) {
     return processInput(UserInput::toggleDateModified);
   } else if (event == Event::t) {
     return processInput(UserInput::refresh);
-  } else if (event == Event::z) {
+  } else if (event == Event::Return) {
     return processInput(UserInput::open);
   } else if (event == Event::q) {
     return processInput(UserInput::quit);
