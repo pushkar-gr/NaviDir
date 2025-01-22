@@ -26,7 +26,7 @@ Component UI::createRootComp(Component& currentDir, Component& currentFiles, Com
 //creates component to display directory program is in
 Component UI::createCurrentDirComp(const path *currentDir) {
   return Renderer([=] {
-    return text(formatText(currentDir->string(), FormatType::Simple)) | center;
+    return text(formatText(currentDir->string(), FormatType::Simple, false)) | center;
   }) | xflex;
 }
 
@@ -427,7 +427,7 @@ UI::UI(FileManager *fileManager, Config *inputConfig) : screen(ScreenInteractive
 
   selectedElement = SelectedElement::files;
 
-  cliText = "Opened directory " + formatText(currentDirectory->string(), FormatType::Simple);
+  cliText = "Opened directory " + formatText(*currentDirectory, FormatType::Simple, false);
   
   screen.Loop(rootComp);
 }

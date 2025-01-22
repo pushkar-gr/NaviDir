@@ -38,37 +38,39 @@ string getIcon(const path& path) {
   }
 }
 
-string formatText(const path& path, FormatType type) {
+string formatText(const path& path, FormatType type, bool fileName) {
+  string name = fileName ? path.filename() : path;
   switch (type) {
     case None: {
       return path;
     }
     case Simple: {
       if (is_directory(path)) {
-        return path.filename().string() + "/";
+        return name + "/";
       }
-      return path.filename();
+      return name;
     }
     case NerdFont: {
-      return getIcon(path) + path.filename().string();
+      return getIcon(path) + name;
     }
   };
-  return path.filename();
+  return name;
 }
 
-string formatText(const directory_entry& entry, FormatType type) {
-  return formatText(entry.path(), type);
+string formatText(const directory_entry& entry, FormatType type, bool fileName) {
+  return formatText(entry.path(), type, fileName);
 }
 
-string formatText(const directory_entry& entry, FormatType type, Config *config) {
-  return formatText(entry.path(), type, config);
+string formatText(const directory_entry& entry, FormatType type, Config *config, bool fileName) {
+  return formatText(entry.path(), type, config, fileName);
 }
 
 char show(char op, perms perm, perms p) {
   return (perms::none == (perm & p)) ? '-' : op;
 }
 
-string formatText(const path& path, FormatType type, Config *config) {
+string formatText(const path& path, FormatType type, Config *config, bool fileName) {
+  string name = fileName ? path.filename() : path;
   string text = "";
   if (config->displayPerms()) {
     perms perm = status(path).permissions();
@@ -106,18 +108,18 @@ string formatText(const path& path, FormatType type, Config *config) {
   }
   switch (type) {
     case None: {
-      return text + path.filename().string();
+      return text + name;
     }
     case Simple: {
       if (is_directory(path)) {
-        return text + path.filename().string() + "/";
+        return text + name + "/";
       }
-      return text + path.filename().string();
+      return text + name;
     }
     case NerdFont: {
-      return getIcon(path) + text + path.filename().string();
+      return getIcon(path) + text + name;
     }
   };
-  return text + path.filename().string();
+  return text + name;
 } 
 

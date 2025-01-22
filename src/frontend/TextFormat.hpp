@@ -17,9 +17,9 @@ enum FormatType {
   NerdFont, //will add respective icon at start
 };
 
-string formatText(const path&, FormatType);
-string formatText(const directory_entry&, FormatType);
-string formatText(const path&, FormatType, Config *);
-string formatText(const directory_entry&, FormatType, Config *);
+string formatText(const path&, FormatType, bool fileName=true);
+string formatText(const directory_entry&, FormatType, bool fileName=true);
+string formatText(const path&, FormatType, Config *, bool fileName=true);
+string formatText(const directory_entry&, FormatType, Config *, bool fileName=true);
 
 #endif
