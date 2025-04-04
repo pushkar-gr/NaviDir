@@ -1,6 +1,4 @@
-#include <gtest/gtest.h>
 #include "UI.hpp"
+#include <gtest/gtest.h>
 
-TEST(UITests, ExampleTest) {
-  EXPECT_TRUE(true);
-}
+TEST(UITests, ExampleTest) { EXPECT_TRUE(true); }

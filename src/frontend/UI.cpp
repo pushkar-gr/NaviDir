@@ -3,38 +3,43 @@
 #include <string>
 #include <unistd.h>
 
-//creates the root Component
-//left: currentFiles
-//right: selectedFiles
-//bottom: cli
-Component UI::createRootComp(Component& currentDir, Component& currentFiles, Component& selectedFiles, Component& cli) {
+// creates the root Component
+// left: currentFiles
+// right: selectedFiles
+// bottom: cli
+Component UI::createRootComp(Component &currentDir, Component &currentFiles,
+                             Component &selectedFiles, Component &cli) {
   return Renderer([=] {
-    return vbox({
-      currentDir->Render() | xflex,
-      separator(),
-      hbox({
-        currentFiles->Render() | size(WIDTH, EQUAL, Terminal::Size().dimx * .3),
-        separator(),
-        selectedFiles->Render() | size(WIDTH, EQUAL, Terminal::Size().dimx * .7),
-      }) | yflex,
-      separator(),
-      cli->Render(),
-      afterRenderFunc()->Render(),
-    });
-  }) | CatchEvent([=] (Event event) {
-    return handleInput(event);
-  });
+           return vbox({
+               currentDir->Render() | xflex,
+               separator(),
+               hbox({
+                   currentFiles->Render() |
+                       size(WIDTH, EQUAL, Terminal::Size().dimx * .3),
+                   separator(),
+                   selectedFiles->Render() |
+                       size(WIDTH, EQUAL, Terminal::Size().dimx * .7),
+               }) | yflex,
+               separator(),
+               cli->Render(),
+               afterRenderFunc()->Render(),
+           });
+         }) |
+         CatchEvent([=](Event event) { return handleInput(event); });
 }
 
-//creates component to display directory program is in
+// creates component to display directory program is in
 Component UI::createCurrentDirComp(const path *currentDir) {
   return Renderer([=] {
-    return text(formatText(currentDir->string(), FormatType::Simple, false)) | center;
-  }) | xflex;
+           return text(formatText(currentDir->string(), FormatType::Simple,
+                                  false)) |
+                  center;
+         }) |
+         xflex;
 }
 
-//creates component to display files in current directory
-Component UI::createCurrentFilesComp(const vector<string> *data, int *index) { 
+// creates component to display files in current directory
+Component UI::createCurrentFilesComp(const vector<string> *data, int *index) {
   MenuOption option = MenuOption::Vertical();
   option.entries_option.transform = [=](EntryState state) {
     Element element = text(state.label);
@@ -50,50 +55,52 @@ Component UI::createCurrentFilesComp(const vector<string> *data, int *index) {
   return Menu(data, index, option) | vscroll_indicator | frame;
 }
 
-//creates component to display the content or files in selected file
-Component UI::createSelectedFileComp(const string *data) { 
+// creates component to display the content or files in selected file
+Component UI::createSelectedFileComp(const string *data) {
   return Renderer([=] {
-    return paragraph(*data) | vscroll_indicator | hscroll_indicator  | focusPositionRelative(focus_x, focus_y) | frame;
+    return paragraph(*data) | vscroll_indicator | hscroll_indicator |
+           focusPositionRelative(focus_x, focus_y) | frame;
   });
 }
 
-//creates cli component for user to input commands
-Component UI::createCliComp(string *cliText, string *cliInput, string *cliOutput) {
-  return Renderer([=] {
-    return text(*cliText + *cliInput + *cliOutput);
-  }) | xflex;
+// creates cli component for user to input commands
+Component UI::createCliComp(string *cliText, string *cliInput,
+                            string *cliOutput) {
+  return Renderer([=] { return text(*cliText + *cliInput + *cliOutput); }) |
+         xflex;
 }
 
-//runs after the root completes rendering
+// runs after the root completes rendering
 Component UI::afterRenderFunc() {
-  return Renderer([=] {
-    return emptyElement();
-  });
+  return Renderer([=] { return emptyElement(); });
 }
 
-//handles user input
+// handles user input
 bool UI::handleInput(Event event) {
-  if (selectedElement == SelectedElement::cli) { //checks if cli is selected
-    if (event == Event::Return) { //if user input is enter, selects file manager and processes cli input
+  if (selectedElement == SelectedElement::cli) { // checks if cli is selected
+    if (event == Event::Return) { // if user input is enter, selects file
+                                  // manager and processes cli input
       selectedElement = SelectedElement::files;
       processCliInput();
-    } else if (event == Event::Escape) { //if user input is escape, clears cli and selects file manager
+    } else if (event == Event::Escape) { // if user input is escape, clears cli
+                                         // and selects file manager
       cliText = cliInput = "";
       selectedElement = SelectedElement::files;
       if (inputAction == UserInput::find) {
         return processInput(UserInput::cleanFind);
       }
-    } else if (event == Event::Backspace) { //backspace
-      if (cliInput.size() > 0) { //if there is any character, pop one
+    } else if (event == Event::Backspace) { // backspace
+      if (cliInput.size() > 0) { // if there is any character, pop one
         cliInput.pop_back();
-        if (inputAction == UserInput::find) { //if filter is active, update filter
+        if (inputAction ==
+            UserInput::find) { // if filter is active, update filter
           config->setFilter(cliInput);
           fm->refresh();
         }
       }
     } else {
-      cliInput += event.character(); //append character
-      if (inputAction == UserInput::find) { //update filter if activated
+      cliInput += event.character();        // append character
+      if (inputAction == UserInput::find) { // update filter if activated
         config->setFilter(cliInput);
         fm->refresh();
       }
@@ -106,13 +113,19 @@ bool UI::handleInput(Event event) {
     return processInput(UserInput::up);
   } else if (event == Event::j || event == Event::ArrowDown) {
     return processInput(UserInput::down);
-  } else if (event == Event::CtrlH || event == Event::ArrowLeftCtrl || event == Event::Backspace || (event.is_mouse() && event.mouse().button == Mouse::WheelLeft)) {
+  } else if (event == Event::CtrlH || event == Event::ArrowLeftCtrl ||
+             event == Event::Backspace ||
+             (event.is_mouse() && event.mouse().button == Mouse::WheelLeft)) {
     return processInput(UserInput::scrollLeft);
-  } else if (event == Event::CtrlL || event == Event::ArrowRightCtrl || (event.is_mouse() && event.mouse().button == Mouse::WheelRight)) {
+  } else if (event == Event::CtrlL || event == Event::ArrowRightCtrl ||
+             (event.is_mouse() && event.mouse().button == Mouse::WheelRight)) {
     return processInput(UserInput::scrollRight);
-  } else if (event == Event::CtrlK || event == Event::ArrowUpCtrl || (event.is_mouse() && event.mouse().button == Mouse::WheelUp)) {
+  } else if (event == Event::CtrlK || event == Event::ArrowUpCtrl ||
+             (event.is_mouse() && event.mouse().button == Mouse::WheelUp)) {
     return processInput(UserInput::scrollUp);
-  } else if (event != Event::Return && (event == Event::CtrlJ || event == Event::ArrowDownCtrl || (event.is_mouse() && event.mouse().button == Mouse::WheelDown))) {
+  } else if (event != Event::Return &&
+             (event == Event::CtrlJ || event == Event::ArrowDownCtrl ||
+              (event.is_mouse() && event.mouse().button == Mouse::WheelDown))) {
     return processInput(UserInput::scrollDown);
   } else if (event == Event::a || event == Event::CtrlN) {
     return processInput(UserInput::createFile);
@@ -130,7 +143,8 @@ bool UI::handleInput(Event event) {
     return processInput(UserInput::cutFile);
   } else if (event == Event::p || event == Event::CtrlP) {
     return processInput(UserInput::pasteFile);
-  } else if (event == Event::Special("/") || event == Event::f || event == Event::CtrlF) {
+  } else if (event == Event::Special("/") || event == Event::f ||
+             event == Event::CtrlF) {
     return processInput(UserInput::find);
   } else if (event == Event::F) {
     return processInput(UserInput::cleanFind);
@@ -152,208 +166,212 @@ bool UI::handleInput(Event event) {
   return false;
 }
 
-//process user input
+// process user input
 bool UI::processInput(UserInput input) {
   inputAction = input;
   switch (input) {
-    case UserInput::left: {
-      fm->switchToParent();
-      focus_x = focus_y = 0;
-      break;
-    }
+  case UserInput::left: {
+    fm->switchToParent();
+    focus_x = focus_y = 0;
+    break;
+  }
 
-    case UserInput::right: {
-      fm->switchPath();
-      focus_x = focus_y = 0;
-      break;
-    }
+  case UserInput::right: {
+    fm->switchPath();
+    focus_x = focus_y = 0;
+    break;
+  }
 
-    case UserInput::up: {
-      fm->decrementSelected();
-      focus_x = focus_y = 0;
-      break;
-    }
+  case UserInput::up: {
+    fm->decrementSelected();
+    focus_x = focus_y = 0;
+    break;
+  }
 
-    case UserInput::down: {
-      fm->incrementSelected();
-      focus_x = focus_y = 0;
-      break;
-    }
+  case UserInput::down: {
+    fm->incrementSelected();
+    focus_x = focus_y = 0;
+    break;
+  }
 
-    case UserInput::scrollLeft: {
-      focus_x -= .1;
-      focus_x = focus_x < 0 ? 0 : focus_x;
-      break;
-    }
+  case UserInput::scrollLeft: {
+    focus_x -= .1;
+    focus_x = focus_x < 0 ? 0 : focus_x;
+    break;
+  }
 
-    case UserInput::scrollRight: {
-      focus_x += .1;
-      focus_x = focus_x > 1 ? 1 : focus_x;
-      break;
-    }
+  case UserInput::scrollRight: {
+    focus_x += .1;
+    focus_x = focus_x > 1 ? 1 : focus_x;
+    break;
+  }
 
-    case UserInput::scrollUp: {
-      focus_y -= .1;
-      focus_y = focus_y < 0 ? 0 : focus_y;
-      break;
-    }
+  case UserInput::scrollUp: {
+    focus_y -= .1;
+    focus_y = focus_y < 0 ? 0 : focus_y;
+    break;
+  }
 
-    case UserInput::scrollDown: {
-      focus_y += .1;
-      focus_y = focus_y > 1 ? 1 : focus_y;
-      break;
-    }
+  case UserInput::scrollDown: {
+    focus_y += .1;
+    focus_y = focus_y > 1 ? 1 : focus_y;
+    break;
+  }
 
-    case UserInput::createFile: {
-      cliText = "Create file ";
-      cliInput = currentDirectory->string() + "/";
-      cliOutput = "";
-      selectedElement = SelectedElement::cli;
-      break;
-    }
+  case UserInput::createFile: {
+    cliText = "Create file ";
+    cliInput = currentDirectory->string() + "/";
+    cliOutput = "";
+    selectedElement = SelectedElement::cli;
+    break;
+  }
 
-    case UserInput::renameFileName: {
-      cliInput = fm->getSelectedFile().path().filename();
-      cliOutput = "";
-      size_t pos = cliInput.find_last_of('.'); //check for extension
-      if (pos != string::npos && pos != 0) {
-        cliInput.erase(pos); //remove extension if found
-      }
-      cliText = "Rename file " + cliInput + " to: ";
-      selectedElement = SelectedElement::cli;
-      break;
+  case UserInput::renameFileName: {
+    cliInput = fm->getSelectedFile().path().filename();
+    cliOutput = "";
+    size_t pos = cliInput.find_last_of('.'); // check for extension
+    if (pos != string::npos && pos != 0) {
+      cliInput.erase(pos); // remove extension if found
     }
+    cliText = "Rename file " + cliInput + " to: ";
+    selectedElement = SelectedElement::cli;
+    break;
+  }
 
-    case UserInput::renameFileWithExt: {
-      cliInput = fm->getSelectedFile().path().filename();
-      cliOutput = "";
-      cliText = "Rename file " + cliInput + " to: ";
-      selectedElement = SelectedElement::cli;
-      break;
-    }
+  case UserInput::renameFileWithExt: {
+    cliInput = fm->getSelectedFile().path().filename();
+    cliOutput = "";
+    cliText = "Rename file " + cliInput + " to: ";
+    selectedElement = SelectedElement::cli;
+    break;
+  }
 
-    case UserInput::moveFile: {
-      cliText = "Move file to ";
-      cliInput = formatText(*currentDirectory, FormatType::Simple);
-      cliOutput = "";
-      selectedElement = SelectedElement::cli;
-      break;
-    }
+  case UserInput::moveFile: {
+    cliText = "Move file to ";
+    cliInput = formatText(*currentDirectory, FormatType::Simple);
+    cliOutput = "";
+    selectedElement = SelectedElement::cli;
+    break;
+  }
 
-    case UserInput::deleteFile: {
-      cliText = "Remove " + formatText(fm->getSelectedFile().path().filename(), FormatType::Simple) + "? y/N: ";
-      cliInput = "";
-      cliOutput = "";
-      selectedElement = SelectedElement::cli;
-      break;
-    }
+  case UserInput::deleteFile: {
+    cliText = "Remove " +
+              formatText(fm->getSelectedFile().path().filename(),
+                         FormatType::Simple) +
+              "? y/N: ";
+    cliInput = "";
+    cliOutput = "";
+    selectedElement = SelectedElement::cli;
+    break;
+  }
 
-    case UserInput::copyFile: {
-      copyCutFile = fm->getSelectedFile();
-      isCopyFile = true;
-      cliText = "Copied file " + formatText(copyCutFile.path().filename(), FormatType::Simple);
-      cliOutput = "";
-      break;
-    }
+  case UserInput::copyFile: {
+    copyCutFile = fm->getSelectedFile();
+    isCopyFile = true;
+    cliText = "Copied file " +
+              formatText(copyCutFile.path().filename(), FormatType::Simple);
+    cliOutput = "";
+    break;
+  }
 
-    case UserInput::cutFile: {
-      copyCutFile = fm->getSelectedFile();
-      isCopyFile = false;
-      cliText = "Cut file " + formatText(copyCutFile.path().filename(), FormatType::Simple);
-      cliOutput = "";
-      break;
-    }
+  case UserInput::cutFile: {
+    copyCutFile = fm->getSelectedFile();
+    isCopyFile = false;
+    cliText = "Cut file " +
+              formatText(copyCutFile.path().filename(), FormatType::Simple);
+    cliOutput = "";
+    break;
+  }
 
-    case UserInput::pasteFile: {
-      if (! copyCutFile.exists()) { //file not copied or cut
-        cliText = "Copy or cut a file to paste";
-        return false;
-      }
-      cliInput = "";
-      cliOutput = "";
-      bool isSuccess = false;
-      if (isCopyFile) {
-        isSuccess = fm->pasteCopiedFile(copyCutFile, &cliOutput);
-      } else {
-        isSuccess = fm->pasteCutFile(copyCutFile, &cliOutput);
-      }
-      if (isSuccess) {
-        cliText = "File pasted";
-      } else {
-        cliText = "Failed to paste file";
-      }
-      return isSuccess;
-      break;
+  case UserInput::pasteFile: {
+    if (!copyCutFile.exists()) { // file not copied or cut
+      cliText = "Copy or cut a file to paste";
+      return false;
     }
+    cliInput = "";
+    cliOutput = "";
+    bool isSuccess = false;
+    if (isCopyFile) {
+      isSuccess = fm->pasteCopiedFile(copyCutFile, &cliOutput);
+    } else {
+      isSuccess = fm->pasteCutFile(copyCutFile, &cliOutput);
+    }
+    if (isSuccess) {
+      cliText = "File pasted";
+    } else {
+      cliText = "Failed to paste file";
+    }
+    return isSuccess;
+    break;
+  }
 
-    case UserInput::find: {
-      cliText = "Filter: ";
-      cliInput = "";
-      cliOutput = "";
-      selectedElement = SelectedElement::cli;
-      break;
-    }
+  case UserInput::find: {
+    cliText = "Filter: ";
+    cliInput = "";
+    cliOutput = "";
+    selectedElement = SelectedElement::cli;
+    break;
+  }
 
-    case UserInput::cleanFind: {
-      cliText = "Cleared filter";
-      cliInput = "";
-      cliOutput = "";
-      config->setFilter("");
-      fm->refresh();
-      break;
-    }
+  case UserInput::cleanFind: {
+    cliText = "Cleared filter";
+    cliInput = "";
+    cliOutput = "";
+    config->setFilter("");
+    fm->refresh();
+    break;
+  }
 
-    case UserInput::toggleHiddenFiles: {
-      config->toggleHiddenFiles();
-      fm->refresh();
-      break;
-    }
+  case UserInput::toggleHiddenFiles: {
+    config->toggleHiddenFiles();
+    fm->refresh();
+    break;
+  }
 
-    case UserInput::togglePermissions: {
-      config->togglePerms();
-      fm->refresh();
-      break;
-    }
+  case UserInput::togglePermissions: {
+    config->togglePerms();
+    fm->refresh();
+    break;
+  }
 
-    case UserInput::toggleSize: {
-      config->toggleFileSize();
-      fm->refresh();
-      break;
-    }
+  case UserInput::toggleSize: {
+    config->toggleFileSize();
+    fm->refresh();
+    break;
+  }
 
-    case UserInput::toggleDateModified: {
-      config->toggleDateMod();
-      fm->refresh();
-      break;
-    }
+  case UserInput::toggleDateModified: {
+    config->toggleDateMod();
+    fm->refresh();
+    break;
+  }
 
-    case UserInput::refresh: {
-      fm->refresh();
-      break;
-    }
+  case UserInput::refresh: {
+    fm->refresh();
+    break;
+  }
 
-    case UserInput::open: {
-      string command = "xdg-open " + fm->getSelectedFile().path().string() + "&";
-      int result = system(command.c_str());
-      cliInput = "";
-      cliOutput = "";
-      if (result != 0) {
-        cliText = "Opened file " + fm->getSelectedFile().path().string();
-      } else {
-        cliText = "Failed to open " + to_string(result);
-      }
+  case UserInput::open: {
+    string command = "xdg-open " + fm->getSelectedFile().path().string() + "&";
+    int result = system(command.c_str());
+    cliInput = "";
+    cliOutput = "";
+    if (result != 0) {
+      cliText = "Opened file " + fm->getSelectedFile().path().string();
+    } else {
+      cliText = "Failed to open " + to_string(result);
     }
+  }
 
-    case UserInput::quit: { 
-      screen.Exit();
-      break;
-    }
-      
+  case UserInput::quit: {
+    screen.Exit();
+    break;
+  }
   }
   return true;
 }
 
-//process cli input
+// process cli input
 bool UI::processCliInput() {
   if (inputAction == UserInput::createFile) {
     const path file = path(cliInput);
@@ -367,10 +385,11 @@ bool UI::processCliInput() {
       return false;
     }
   } else if (inputAction == UserInput::renameFileName) {
-    const path file = path(cliInput + fm->getSelectedFile().path().extension().string());
+    const path file =
+        path(cliInput + fm->getSelectedFile().path().extension().string());
     cliInput = "";
     cliOutput = "";
-    if (fm->renameSelected(*currentDirectory/file, &cliOutput)) {
+    if (fm->renameSelected(*currentDirectory / file, &cliOutput)) {
       cliText = "File renamed";
       return true;
     } else {
@@ -381,7 +400,7 @@ bool UI::processCliInput() {
     const path file = path(cliInput);
     cliInput = "";
     cliOutput = "";
-    if (fm->renameSelected(*currentDirectory/file, &cliOutput)) {
+    if (fm->renameSelected(*currentDirectory / file, &cliOutput)) {
       cliText = "File renamed";
       return true;
     } else {
@@ -400,7 +419,8 @@ bool UI::processCliInput() {
       return false;
     }
   } else if (inputAction == UserInput::deleteFile) {
-    if (cliInput.size() == 1 && tolower(cliInput.at(0)) == 'y') { //if cli input is y
+    if (cliInput.size() == 1 &&
+        tolower(cliInput.at(0)) == 'y') { // if cli input is y
       cliInput = "";
       cliOutput = "";
       if (fm->deleteSelected(&cliOutput)) {
@@ -419,9 +439,10 @@ bool UI::processCliInput() {
   return false;
 }
 
-//constructor
-//will get the data from backend and create UI
-UI::UI(FileManager *fileManager, Config *inputConfig) : screen(ScreenInteractive::Fullscreen()) {
+// constructor
+// will get the data from backend and create UI
+UI::UI(FileManager *fileManager, Config *inputConfig)
+    : screen(ScreenInteractive::Fullscreen()) {
   fm = fileManager;
 
   config = inputConfig;
@@ -440,15 +461,17 @@ UI::UI(FileManager *fileManager, Config *inputConfig) : screen(ScreenInteractive
 
   cliComp = createCliComp(&cliText, &cliInput, &cliOutput);
 
-  rootComp = createRootComp(currentDirectoryComp, currentFilesComp, selectedFileComp, cliComp);
+  rootComp = createRootComp(currentDirectoryComp, currentFilesComp,
+                            selectedFileComp, cliComp);
 
   selectedElement = SelectedElement::files;
 
-  cliText = "Opened directory " + formatText(*currentDirectory, FormatType::Simple, false);
-  
+  cliText = "Opened directory " +
+            formatText(*currentDirectory, FormatType::Simple, false);
+
   screen.Loop(rootComp);
 }
 
-//destructor
-//does nothing for now
+// destructor
+// does nothing for now
 UI::~UI() {}

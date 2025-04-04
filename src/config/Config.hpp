@@ -6,11 +6,11 @@ using namespace std;
 
 class Config {
 private:
-  bool showHiddenFiles; //true => display hidden files
-  bool showPerms; //true => show file perms
-  bool showFileSize; //true => show file size
-  bool showDateMod; //true => show modification date
-  string filter; //apply filter for currentFiles
+  bool showHiddenFiles; // true => display hidden files
+  bool showPerms;       // true => show file perms
+  bool showFileSize;    // true => show file size
+  bool showDateMod;     // true => show modification date
+  string filter;        // apply filter for currentFiles
 
 public:
   Config();

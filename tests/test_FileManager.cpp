@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
-#include "FileManager.hpp"
 #include "Config.hpp"
+#include "FileManager.hpp"
+#include <gtest/gtest.h>
 
 using namespace std::filesystem;
 
@@ -15,7 +15,7 @@ protected:
         remove_all(tempDir);
       }
       create_directory(tempDir);
-    } catch (const exception& e) {
+    } catch (const exception &e) {
       cerr << "Failed to remove temporary directory: " << e.what() << endl;
       exit(EXIT_FAILURE);
     }
@@ -26,7 +26,7 @@ protected:
       if (exists(tempDir)) {
         remove_all(tempDir);
       }
-    } catch (const exception& e) {
+    } catch (const exception &e) {
       cerr << "Failed to remove temporary directory: " << e.what() << endl;
       exit(EXIT_FAILURE);
     }
@@ -104,7 +104,7 @@ TEST_F(FileManagerTest, GetSelectedFileContent) {
   FileManager fm(tempDir, &config);
 
   fm.selectFile(filePath);
-  
+
   ASSERT_EQ(fm.getSelectedFileContent(), content);
 }
 
