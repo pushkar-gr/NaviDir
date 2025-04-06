@@ -108,26 +108,29 @@ bool UI::handleInput(Event event) {
   } else if (event == Event::h || event == Event::ArrowLeft) {
     return processInput(UserInput::left);
   } else if (event == Event::l || event == Event::ArrowRight) {
-    return processInput(UserInput::right);
+    if (fm->isSelectedDirectory()) {
+      return processInput(UserInput::right);
+    } else {
+      return processInput(UserInput::open);
+    }
   } else if (event == Event::k || event == Event::ArrowUp) {
     return processInput(UserInput::up);
   } else if (event == Event::j || event == Event::ArrowDown) {
     return processInput(UserInput::down);
-  } else if (event == Event::CtrlH || event == Event::ArrowLeftCtrl ||
+  } else if (event == Event::H || event == Event::ArrowLeftCtrl ||
              event == Event::Backspace ||
              (event.is_mouse() && event.mouse().button == Mouse::WheelLeft)) {
     return processInput(UserInput::scrollLeft);
-  } else if (event == Event::CtrlL || event == Event::ArrowRightCtrl ||
+  } else if (event == Event::L || event == Event::ArrowRightCtrl ||
              (event.is_mouse() && event.mouse().button == Mouse::WheelRight)) {
     return processInput(UserInput::scrollRight);
-  } else if (event == Event::CtrlK || event == Event::ArrowUpCtrl ||
+  } else if (event == Event::K || event == Event::ArrowUpCtrl ||
              (event.is_mouse() && event.mouse().button == Mouse::WheelUp)) {
     return processInput(UserInput::scrollUp);
-  } else if (event != Event::Return &&
-             (event == Event::CtrlJ || event == Event::ArrowDownCtrl ||
-              (event.is_mouse() && event.mouse().button == Mouse::WheelDown))) {
+  } else if (event == Event::J || event == Event::ArrowDownCtrl ||
+             (event.is_mouse() && event.mouse().button == Mouse::WheelDown)) {
     return processInput(UserInput::scrollDown);
-  } else if (event == Event::a || event == Event::CtrlN) {
+  } else if (event == Event::a) {
     return processInput(UserInput::createFile);
   } else if (event == Event::e) {
     return processInput(UserInput::renameFileName);
@@ -137,11 +140,11 @@ bool UI::handleInput(Event event) {
     return processInput(UserInput::moveFile);
   } else if (event == Event::d) {
     return processInput(UserInput::deleteFile);
-  } else if (event == Event::y || event == Event::CtrlC) {
+  } else if (event == Event::y) {
     return processInput(UserInput::copyFile);
-  } else if (event == Event::Y || event == Event::CtrlX) {
+  } else if (event == Event::Y) {
     return processInput(UserInput::cutFile);
-  } else if (event == Event::p || event == Event::CtrlP) {
+  } else if (event == Event::p) {
     return processInput(UserInput::pasteFile);
   } else if (event == Event::Special("/") || event == Event::f ||
              event == Event::CtrlF) {
@@ -159,7 +162,11 @@ bool UI::handleInput(Event event) {
   } else if (event == Event::t) {
     return processInput(UserInput::refresh);
   } else if (event == Event::Return) {
-    return processInput(UserInput::open);
+    if (fm->isSelectedDirectory()) {
+      return processInput(UserInput::right);
+    } else {
+      return processInput(UserInput::open);
+    }
   } else if (event == Event::q) {
     return processInput(UserInput::quit);
   }
@@ -352,7 +359,7 @@ bool UI::processInput(UserInput input) {
   }
 
   case UserInput::open: {
-    string command = "xdg-open " + fm->getSelectedFile().path().string() + "&";
+    string command = "xdg-open \\" + fm->getSelectedFile().path().string();
     int result = system(command.c_str());
     cliInput = "";
     cliOutput = "";
