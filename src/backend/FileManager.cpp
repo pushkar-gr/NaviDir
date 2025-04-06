@@ -1,6 +1,4 @@
 #include "FileManager.hpp"
-#include <cctype>
-#include <string>
 
 bool FileManager::updateFiles(
     vector<directory_entry> &vec,
