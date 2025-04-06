@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std::filesystem;
 using namespace std;
@@ -41,6 +42,10 @@ private:
   bool updateFiles(
       vector<directory_entry> &,
       const path &); // fills the vector with files from the specified path
+
+  bool isLikelyTextFile(
+      const std::filesystem::path &,
+      size_t bytesToCheck = 512); // checks if file is text file or binary file
 
   void
   updateSelectedData(); // updates selectedFilesChildren or selectedFileContent

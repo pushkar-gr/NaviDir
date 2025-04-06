@@ -31,6 +31,45 @@ bool FileManager::updateFiles(
   return updateFiles(vec, entry);
 }
 
+bool FileManager::isLikelyTextFile(
+    const std::filesystem::path &path,
+    size_t bytesToCheck) { // makes decision based on file extension, if likely
+                           // a binary, reads file to confirm
+  // heuristic based on file extension
+  std::string extension = path.extension().string();
+  std::transform(extension.begin(), extension.end(), extension.begin(),
+                 ::tolower);
+  if (extension == ".txt" || extension == ".md" || extension == ".cpp" ||
+      extension == ".h" || extension == ".hpp" || extension == ".c" ||
+      extension == ".log" || extension == ".js" || extension == ".py" ||
+      extension == ".css" || extension == ".html" || extension == ".csv" ||
+      extension == ".json" || extension == ".sh" || extension == ".conf" ||
+      extension == ".ini" || extension == ".cmake" || extension == ".diff" ||
+      extension == ".patch") {
+    return true; // likely text based on extension
+  }
+
+  // heuristic based on content (checking for binary characters)
+  std::ifstream file(path, std::ios::binary);
+  if (!file) {
+    return false; // unable to open, consider not text
+  }
+  char buffer[bytesToCheck];
+  file.read(buffer, bytesToCheck);
+  std::streamsize readCount = file.gcount();
+  for (std::streamsize i = 0; i < readCount; ++i) {
+    if (buffer[i] == 0) {
+      return false; // found a null byte, likely binary
+    }
+    if (static_cast<unsigned char>(buffer[i]) < 32 && buffer[i] != '\n' &&
+        buffer[i] != '\r' && buffer[i] != '\t') {
+      return false; // found a less common control character, likely binary
+    }
+  }
+
+  return true;
+}
+
 void FileManager::updateSelectedData() { // updates selectedFileChildren or
                                          // selectedFileContent depending on
                                          // selectedFile type
@@ -43,6 +82,11 @@ void FileManager::updateSelectedData() { // updates selectedFileChildren or
     refreshSelected();
   } else { // writes the content of selectedFile to selectedFileContent if it is
            // not a directory
+    if (!isLikelyTextFile(selectedFile.path())) {
+      selectedFileContent = "[Not a recognized or likely text file]";
+      selectedFileDisplayContent = selectedFileContent;
+      return;
+    }
     ifstream file(selectedFile.path());
     if (!file) {
       selectedFileContent = "Unable to open file!";
