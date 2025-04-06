@@ -1,7 +1,4 @@
 #include "UI.hpp"
-#include <cstdlib>
-#include <string>
-#include <unistd.h>
 
 // creates the root Component
 // left: currentFiles
@@ -111,7 +108,7 @@ bool UI::handleInput(Event event) {
     if (fm->isSelectedDirectory()) {
       return processInput(UserInput::right);
     } else {
-      return processInput(UserInput::open);
+      return processInput(UserInput::openFile);
     }
   } else if (event == Event::k || event == Event::ArrowUp) {
     return processInput(UserInput::up);
@@ -165,7 +162,7 @@ bool UI::handleInput(Event event) {
     if (fm->isSelectedDirectory()) {
       return processInput(UserInput::right);
     } else {
-      return processInput(UserInput::open);
+      return processInput(UserInput::openFile);
     }
   } else if (event == Event::q) {
     return processInput(UserInput::quit);
@@ -358,16 +355,16 @@ bool UI::processInput(UserInput input) {
     break;
   }
 
-  case UserInput::open: {
-    string command = "xdg-open \\" + fm->getSelectedFile().path().string();
-    int result = system(command.c_str());
+  case UserInput::openFile: {
+    bool result = openFile(fm->getSelectedFile().path());
     cliInput = "";
     cliOutput = "";
-    if (result != 0) {
+    if (result) {
       cliText = "Opened file " + fm->getSelectedFile().path().string();
     } else {
       cliText = "Failed to open " + to_string(result);
     }
+    break;
   }
 
   case UserInput::quit: {
@@ -375,7 +372,7 @@ bool UI::processInput(UserInput input) {
     break;
   }
   }
-  return true;
+  return false;
 }
 
 // process cli input
@@ -444,6 +441,40 @@ bool UI::processCliInput() {
     }
   }
   return false;
+}
+
+// open file in backend
+bool UI::openFile(const std::filesystem::path &filePath) {
+  pid_t pid = fork();
+
+  if (pid == -1) {
+    perror("fork");
+    return false;
+  }
+
+  if (pid == 0) { // Child process
+    std::string command = "xdg-open";
+    std::string pathStr = filePath.string();
+
+    std::vector<char *> args;
+    args.push_back(const_cast<char *>(command.c_str()));
+    args.push_back(const_cast<char *>(pathStr.c_str()));
+    args.push_back(nullptr);
+
+    int devnull = open("/dev/null", O_WRONLY);
+    if (devnull != -1) {
+      dup2(devnull, STDOUT_FILENO);
+      dup2(devnull, STDERR_FILENO);
+      close(devnull);
+    }
+
+    execvp(command.c_str(), args.data());
+    perror("execvp");
+    exit(EXIT_FAILURE); // Child exits on execvp failure
+  } else {              // Parent process
+    return true;        // Successfully forked, assuming open will happen
+  }
+  return false; // Should not reach here in the parent process after fork
 }
 
 // constructor

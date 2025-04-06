@@ -2,13 +2,18 @@
 #define UI_HPP
 #include "../backend/FileManager.hpp"
 #include "../config/Config.hpp"
+#include <cmath>
 #include <cstdlib>
+#include <fcntl.h>
 #include <filesystem>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
 #include <ftxui/component/event.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <string>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include <vector>
 
 using namespace std;
@@ -43,7 +48,7 @@ enum UserInput {
   toggleSize,
   toggleDateModified,
   refresh,
-  open,
+  openFile,
   quit,
 };
 
@@ -66,9 +71,10 @@ private:
   Component
   afterRenderFunc(); // a function that runs after rendering root component
 
-  bool handleInput(Event);      // handls input
-  bool processInput(UserInput); // process user input
-  bool processCliInput();       // process cli input
+  bool handleInput(Event);                      // handls input
+  bool processInput(UserInput);                 // process user input
+  bool processCliInput();                       // process cli input
+  bool openFile(const std::filesystem::path &); // open a file in background
 
   SelectedElement selectedElement; // focused element
   UserInput inputAction;           // user input
