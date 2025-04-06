@@ -9,7 +9,7 @@ A simple terminal based file explorer</li>
   <li><code>mkdir build</code></li>
   <li><code>cmake -S . -B build</code></li>
   <li><code>cmake --build build</code></li>
-  <li>(Optional) to add executable to /bin <code>sudo cmake --install build</code></li>
+  <li>(Optional) to add executable to <code>/usr/local/bin</code> <code>cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local && make && sudo make install</code></li>
   <li><code>build/bin/NaviDir</code></li>
 </ul>
 
@@ -21,13 +21,13 @@ A simple terminal based file explorer</li>
 <h1>How to use ?</h1>
 <ul>
   <li><code>h</code>: switch to parent directory</li>
-  <li><code>l</code>: switch to selected file</li>
+  <li><code>l</code> / <code>Enter</code>: switch to selected file</li>
   <li><code>k</code>: select previous file</li>
   <li><code>j</code>: select next file</li>
-  <li><code>Ctrl + h</code>: scroll left</li>
-  <li><code>Ctrl + l</code>: scroll right</li>
-  <li><code>Ctrl + k</code>: scroll up</li>
-  <li><code>Ctrl + j</code>: scroll down</li>
+  <li><code>Shift + h</code>: scroll left</li>
+  <li><code>Shift + l</code>: scroll right</li>
+  <li><code>Shift + k</code>: scroll up</li>
+  <li><code>Shift + j</code>: scroll down</li>
   <li><code>a</code>: create new file</li>
   <li><code>e</code>: rename file name</li>
   <li><code>r</code>: rename file</li>
@@ -41,7 +41,7 @@ A simple terminal based file explorer</li>
   <li><code>b</code>: toggle file permissions</li>
   <li><code>n</code>: toggle file size</li>
   <li><code>m</code>: toggle modification date</li>
-  <li><code>Enter</code>: open selected file</li>
+  <li><code>l</code> / <code>Enter</code>: open selected file</li>
   <li><code>q</code>: quit</li>
 </ul>
 
